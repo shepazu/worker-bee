@@ -7,6 +7,7 @@
 
 body {
   font-family: Verdana, Arial, sans-serif;
+  margin: 0 2rem;
 }
 
 main {
@@ -105,4 +106,9 @@ tbody input[type=number],
 
 label[for=bee-word] {
   margin: 0.5rem 0;
+}
+
+#two-letter-lists dl {
+  column-count: 3;
+  column-gap: 4rem;
 }
