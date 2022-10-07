@@ -1,0 +1,108 @@
+
+:root {
+  --medium_gray: hsl(193, 5%, 43%);
+  --table_color: gray;
+  --table_header_text: white;
+}
+
+body {
+  font-family: Verdana, Arial, sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+button {
+  background-color: var(--control);
+  color: var(--chalk_white);
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: 2px solid var(--control-border);
+  border-radius: 5px;
+}
+
+
+/* table styles */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+}
+
+thead > tr {
+  background-color: var(--table_color);
+  color: var(--table_header_text);
+}
+
+  thead th {
+    background-color: var(--table_color);
+  }
+
+table td,
+table th {
+  padding: 0;
+  border: var(--table_color) 1px solid;
+  font-size: 16px;
+  padding: 0.15rem 0.3rem;
+}
+
+table th {
+  vertical-align: top;
+}
+
+
+/* new styes */
+
+/* zebra stripes */
+tr:nth-child(even),
+tr:nth-child(even) input[type=number] {
+  background-color: #f2f2f2;
+}
+
+th,
+td {
+  text-align: center;
+}
+
+th {
+  font-weight: normal;
+}
+
+tbody th {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+tbody input[type=number],
+#two-letter-lists input[type=number] {
+  font-size: 16px;
+  max-width: 3em;
+  border: none;
+  text-align: center;
+}
+
+#two-letter-lists input[type=number] {
+  text-align: start;
+}
+
+
+.two_letter_code {
+  text-transform: uppercase;
+  display: inline-block;
+  min-width: 1.5rem;
+}
+
+.separator {
+  color: var(--medium_gray);
+  padding: 0 0.3rem;
+}
+
+label[for=bee-word] {
+  margin: 0.5rem 0;
+}
