@@ -18,7 +18,7 @@ export class beeMain extends EventTarget {
    */
   _init() {
     this.beeGridInput = document.getElementById('bee-grid');
-    this.beeGridInput.addEventListener('input', this._parseGrid.bind(this));
+    this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
     this.beeWordInput = document.getElementById('bee-word');
     this.beeWordInput.addEventListener('change', this._addWord.bind(this));
@@ -30,7 +30,7 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _parseGrid(event) {
+  _parseHints(event) {
     const target = event.target;
     this.hintText = target.value;
 
@@ -87,6 +87,10 @@ export class beeMain extends EventTarget {
     const wordLengths = this._findWordLengthCounts();
     const totals = this._findWordLengthTotals();
 
+    // console.log('header', header);
+    // console.log('wordLengths', wordLengths);
+    // console.log('totals', totals);
+
     const gridTableArray = wordLengths;
     gridTableArray.unshift(header);
     gridTableArray.push(totals);
@@ -103,11 +107,15 @@ export class beeMain extends EventTarget {
   _findGridHeader() {
     // const gridHeaderList = this.hintText.match(/(\d+).+Σ/);
     const gridHeaderList = this.hintText.match(/(\d[\s+\t+].+Σ)/);
+    // console.log('gridHeaderList', gridHeaderList);
     if (gridHeaderList) {
-      const gridHeaderArray = gridHeaderList[0].split(/[\s+\t+]/);
+      // const gridHeaderArray = gridHeaderList[0].trim().replace(/[\s\t]/g, ' ').split(/\s+/);
+      const gridHeaderArray = this._whitespacedStringToArray( gridHeaderList[0] );
+      // console.log('gridHeaderArray', gridHeaderArray);
       gridHeaderArray.unshift('');
       return gridHeaderArray;
     }
+    return []; 
   }
 
   /**
@@ -119,15 +127,18 @@ export class beeMain extends EventTarget {
   _findWordLengthCounts() {
     // const wordLengthLetterArray = this.hintText.match(/([a-z]){1}:\s.+\d/g);
     const wordLengthLetterArray = this.hintText.match(/\n([A-Za-z]){1}:\s.+\d/g);
-    console.log(wordLengthLetterArray);
+    // console.log(wordLengthLetterArray);
     const gridTableArray = [];  
     if (wordLengthLetterArray) {
       const wordLengthRows = [];
       for (let row of wordLengthLetterArray) {
-        console.log('row', row);
-        const wordLengthRowArray = row.trim().split(/[\s\t]/);
+        // // console.log('row', row);
+        // const wordLengthRowArray = row.trim().replace(/[\s\t]/g, ' ').split(/[\s+]/);
         // const wordLengthRowArray = row.split(/[\s+\t+]/);
-        console.log('wordLengthRowArray', wordLengthRowArray);
+        // console.log('wordLengthRowArray', wordLengthRowArray);
+
+        // const wordLengthRowArray = row.trim().split(/[\s\t]/);
+        const wordLengthRowArray = this._whitespacedStringToArray( row );
         wordLengthRows.push(wordLengthRowArray);
       }
 
@@ -153,9 +164,28 @@ export class beeMain extends EventTarget {
   _findWordLengthTotals() {
     const wordLengthTotalList = this.hintText.match(/Σ:\s.+\d/);
     if (wordLengthTotalList) {
-      const wordLengthTotalArray = wordLengthTotalList[0].split(/[\s+\t+]/);
+      // const wordLengthTotalArray = wordLengthTotalList[0].split(/[\s+\t+]/);
+      // const wordLengthTotalArray = wordLengthTotalList[0].trim().replace(/[\s\t]/g, ' ').split(/[\s+]/);
+      const wordLengthTotalArray = this._whitespacedStringToArray( wordLengthTotalList[0] );
       return wordLengthTotalArray;
-    }    
+    }
+    return []; 
+  }
+
+  /**
+   * Finds and formats the footer row of grid totals.
+   * @private
+   * @memberOf beeMain
+   * @return {Array} An array of footer grid totals.
+   */
+  _whitespacedStringToArray(str = '') {
+    const trimmed = str.trim();
+    const replaced = trimmed.replace(/\t+/g, ' ').replace(/\s+/g, ' ');
+    const strArray = replaced.split(/\s+/);
+    // console.log('trimmed', trimmed);
+    // console.log('replaced', replaced);
+    // console.log('strArray', strArray);
+    return strArray; 
   }
 
   /**
@@ -164,8 +194,9 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _findTwoLetterList() {
-    const twoLetterArray = this.hintText.match(/\w\w-\d+/g);
+    let twoLetterArray = this.hintText.match(/\w\w-\d+/g);
     if (twoLetterArray) {
+      twoLetterArray = twoLetterArray.map((str) => str.toUpperCase() );
       this._createTwoLetterList( twoLetterArray );
     }    
   }
@@ -275,6 +306,8 @@ export class beeMain extends EventTarget {
     const target = event.target;
     const wordList = target.value.trim();
 
+    console.log('wordList', wordList);
+
     if (wordList) {
       const wordArray = wordList.split(/\W+/);
       for (const eachWord of wordArray) { 
@@ -284,10 +317,12 @@ export class beeMain extends EventTarget {
           target.value = '';
 
           // find first letter
-          const firstLetter = eachWord.substring(0, 1);
+          const firstLetter = eachWord.substring(0, 1).toUpperCase();
 
           // find matching two-letter category
-          const twoLetters = eachWord.substring(0, 2);
+          const twoLetters = eachWord.substring(0, 2).toUpperCase();
+
+          console.log('_addWord:twoLetters', twoLetters);
 
           // find length of word
           const wordLength = eachWord.length;
