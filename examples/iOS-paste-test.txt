@@ -1,0 +1,20 @@
+M A L N O P R
+
+WORDS: 51, POINTS: 196, PANGRAMS: 1
+
+4 5 6 7 8 10 Σ
+A: 1 3 1 - - - 5
+L: 4 1 - 1 - - 6
+M: 9 8 3 - 1 - 21
+N: 1 - 2 - - - 3
+P: 4 2 2 1 2 1 12
+R: 4 - - - - - 4
+Σ: 23 14 8 2 3 1 51
+Two letter list:
+
+AL-1 AM-2 AR-2
+LA-3 LL-1 LO-2
+MA-10 MO-11
+NA-1 NO-2
+PA-5 PO-4 PR-3
+RA-1 RO-3

@@ -15,3 +15,23 @@ Letter total row:
 
 Two letter list:
 (\w\w-\d)
+------
+iOS:
+
+Letter list:
+((\w\s){6}\w)
+
+Stats:
+(WORDS: .+)
+
+Header row:
+(\d[\s+\t+].+Σ)
+
+Letter count row:
+^(\w:\s.+\d)
+
+Letter total row:
+^(Σ:\s.+\d)
+
+Two letter list:
+(\w\w-\d)

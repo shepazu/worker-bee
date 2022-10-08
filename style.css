@@ -28,6 +28,17 @@ h1 {
   padding: 0;
 }
 
+h2 {
+  font-size: 1.25rem;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+.bee {
+  font-size: 4rem; 
+}
+
 main {
   display: flex;
   flex-direction: column;
@@ -129,7 +140,7 @@ label[for=bee-word] {
 }
 
 #two-letter-lists dl {
-  column-count: 3;
+  column-count: 4;
   column-gap: 4rem;
 }
 
@@ -149,4 +160,9 @@ details summary {
 
 details[open] summary {
   list-style-type: '🍯 ';
+}
+
+#two-letter-lists input[type=number][value=0] {
+  opacity: 0.5;
+  background-color: red;
 }

@@ -50,6 +50,7 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _findLetterList() {
+    // const letterList = this.hintText.match(/(\w\s){6}\w/);
     const letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
       const letterArray = letterList[0].split(/\s/);
@@ -100,9 +101,10 @@ export class beeMain extends EventTarget {
    * @return {Array} An array of header word counts.
    */
   _findGridHeader() {
-    const gridHeaderList = this.hintText.match(/(\d+).+Σ/);
+    // const gridHeaderList = this.hintText.match(/(\d+).+Σ/);
+    const gridHeaderList = this.hintText.match(/(\d[\s+\t+].+Σ)/);
     if (gridHeaderList) {
-      const gridHeaderArray = gridHeaderList[0].split(/\t/);
+      const gridHeaderArray = gridHeaderList[0].split(/[\s+\t+]/);
       gridHeaderArray.unshift('');
       return gridHeaderArray;
     }
@@ -115,26 +117,31 @@ export class beeMain extends EventTarget {
    * @return {Array} An array of arrays of letters and word counts.
    */
   _findWordLengthCounts() {
-    const wordLengthLetterArray = this.hintText.match(/([a-z]){1}:\s.+\d/g);
+    // const wordLengthLetterArray = this.hintText.match(/([a-z]){1}:\s.+\d/g);
+    const wordLengthLetterArray = this.hintText.match(/\n([A-Za-z]){1}:\s.+\d/g);
+    console.log(wordLengthLetterArray);
+    const gridTableArray = [];  
     if (wordLengthLetterArray) {
       const wordLengthRows = [];
       for (let row of wordLengthLetterArray) {
-        const wordLengthRowArray = row.split(/\t/);
+        console.log('row', row);
+        const wordLengthRowArray = row.trim().split(/[\s\t]/);
+        // const wordLengthRowArray = row.split(/[\s+\t+]/);
+        console.log('wordLengthRowArray', wordLengthRowArray);
         wordLengthRows.push(wordLengthRowArray);
       }
 
-      const gridTableArray = [];  
       for (let wordLengthRow of wordLengthRows) {
         const newRow = wordLengthRow.map((str, index) => {
           if ( index === 0 ) {
-            return str.replace(/[:\s]/g, '');
+            return str.replace(/[:\s\t]/g, '');
           }
           return parseInt(str) || '-';
         });
         gridTableArray.push(newRow);
       }
-      return gridTableArray;
     }
+    return gridTableArray;
   }
 
   /**
@@ -146,7 +153,7 @@ export class beeMain extends EventTarget {
   _findWordLengthTotals() {
     const wordLengthTotalList = this.hintText.match(/Σ:\s.+\d/);
     if (wordLengthTotalList) {
-      const wordLengthTotalArray = wordLengthTotalList[0].split(/\t/);
+      const wordLengthTotalArray = wordLengthTotalList[0].split(/[\s+\t+]/);
       return wordLengthTotalArray;
     }    
   }
@@ -274,6 +281,8 @@ export class beeMain extends EventTarget {
         // see if the word has already been entered
         const prefoundWord = document.getElementById( eachWord );
         if (!prefoundWord) {
+          target.value = '';
+
           // find first letter
           const firstLetter = eachWord.substring(0, 1);
 
@@ -301,18 +310,21 @@ export class beeMain extends EventTarget {
 
             // decrement the two-letter count
             let countEl = twoLetterTerm.querySelector('input[type=number]');
-            countEl.value = --countEl.value;
+            // countEl.value = --countEl.value;
+            this._setNumberInputValue( countEl, --countEl.value );
 
             // decrement the word-grid count
             let gridCountEl = document.getElementById(`${firstLetter}-${wordLength}`);
             if (gridCountEl) {
-              gridCountEl.value = --gridCountEl.value;
+              // gridCountEl.value = --gridCountEl.value;
+              this._setNumberInputValue( gridCountEl, --gridCountEl.value );
             }
 
             // decrement the word-grid letter total count
             let gridTotalCountEl = document.getElementById(`${firstLetter}-Σ`);
             if (gridTotalCountEl) {
-              gridTotalCountEl.value = --gridTotalCountEl.value;
+              // gridTotalCountEl.value = --gridTotalCountEl.value;
+              this._setNumberInputValue( gridTotalCountEl, --gridTotalCountEl.value );
             }
 
             // decrement the word-grid word-length total count
@@ -341,8 +353,34 @@ export class beeMain extends EventTarget {
     numberInput.id = id;
     numberInput.type = 'number';
     numberInput.min = 0;
-    numberInput.value = value;
+    // numberInput.value = value;
+    this._setNumberInputValue( numberInput, value );
 
     return numberInput;
   }
+
+  /**
+   * Sets the value of a number input element.
+   * @param {Element} target The input element to be set.
+   * @param {string} value The value for the input element.
+   * @private
+   * @memberOf beeMain
+   * @return {Element} The number input element.
+   */
+  _setNumberInputValue( target, value ) {
+    target.value = value;
+    target.setAttribute('value', value);
+    return target;
+  }
+
+  // /**
+  //  * Sets the value of a number input element.
+  //  * @param {Event} event The event on the element.
+  //  * @private
+  //  * @memberOf beeMain
+  //  */
+  // _updateInputValue( event ) {
+  //   const target = event.target;
+  //   this._setNumberInputValue( target, target.value );
+  // }
 }
