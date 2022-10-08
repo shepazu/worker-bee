@@ -306,15 +306,16 @@ export class beeMain extends EventTarget {
     const target = event.target;
     const wordList = target.value.trim();
 
-    console.log('wordList', wordList);
+    // console.log('wordList', wordList);
+    target.value = '';
 
     if (wordList) {
       const wordArray = wordList.split(/\W+/);
-      for (const eachWord of wordArray) { 
+      for (let eachWord of wordArray) {
+        eachWord = eachWord.toLowerCase();
         // see if the word has already been entered
         const prefoundWord = document.getElementById( eachWord );
         if (!prefoundWord) {
-          target.value = '';
 
           // find first letter
           const firstLetter = eachWord.substring(0, 1).toUpperCase();
