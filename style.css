@@ -3,6 +3,16 @@
   src: url('./assets/HoneycombHappiness-ywnRm.ttf') format("truetype");
 }
 
+html, body, div, span, h1, h2, p, a, abbr, dl, dt, dd, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, details, footer, header, menu, nav, output, section, summary {  
+  margin: 0;  
+  padding: 0;  
+  border: 0;  
+  font-size: 100%;  
+  font: inherit;  
+  vertical-align: baseline; 
+  box-sizing: border-box;
+}
+
 :root {
   --medium_gray: hsl(193, 5%, 43%);
   --table_color_dark: hsl(45, 100%, 34%);
@@ -16,13 +26,24 @@
 
 body {
   font-family: Verdana, Arial, sans-serif;
-  margin: 0 2rem;
+  /* margin: 0 2rem; */
   background-color: var(--background);
+}
+
+header,
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-content: stretch;
+  gap: 0.5em;
+  width: 100%;
 }
 
 h1 {
   font-family: HoneycombHappiness, Verdana, Arial, sans-serif; 
-  font-size: 5rem;
+  font-size: rem;
   color: var(--heading_text);
   margin: 0;
   padding: 0;
@@ -31,36 +52,61 @@ h1 {
 h2 {
   font-size: 1.25rem;
   font-weight: normal;
-  margin: 0;
+  margin: 0 0 1rem 0;
   padding: 0;
 }
 
 .bee {
-  font-size: 4rem; 
+  font-size: 2rem; 
 }
 
-main {
+p, 
+label,
+input[type=text] {
+ margin: 0 0.2rem;
+}
+
+/* inputs */
+
+
+textarea, 
+input {
+  background-color: var(--table_background);
+  border: 1px solid var(--table_color);
+}
+
+textarea,
+table {
+  width: 100%;
+}
+
+details summary {
+  background-color: var(--table_background);
+  border: 1px solid var(--table_color);
+  /* padding: 0.1rem; */
+  min-width: 29rem;
+  list-style-type: '🐝 ';
+}
+
+details[open] summary {
+  list-style-type: '🍯 ';
+}
+
+#word-input {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: center;
+  align-items: stretch;
 }
 
-
-button {
-  background-color: var(--control);
-  color: var(--chalk_white);
-  font-size: 1.5rem;
-  font-weight: bold;
-  border: 2px solid var(--control-border);
-  border-radius: 5px;
+#word-input input[type=text] {
+  flex-grow: 2;
 }
-
 
 /* table styles */
 
 table {
-  width: 100%;
+  align-self: stretch;
+
   border-collapse: collapse;
   margin-bottom: 1rem;
   background-color: var(--table_background);
@@ -86,9 +132,6 @@ table th {
 table th {
   vertical-align: top;
 }
-
-
-/* new styes */
 
 /* zebra stripes */
 tr:nth-child(even),
@@ -119,6 +162,13 @@ tbody input[type=number],
   text-align: center;
 }
 
+/* two-letter list dl */
+
+dd {
+  margin-left: 1.5rem;
+  text-transform: capitalize;
+}
+
 #two-letter-lists input[type=number] {
   text-align: start;
 }
@@ -135,34 +185,34 @@ tbody input[type=number],
   padding: 0 0.3rem;
 }
 
-label[for=bee-word] {
-  margin: 0.5rem 0;
-}
-
 #two-letter-lists dl {
-  column-count: 4;
-  column-gap: 4rem;
-}
-
-textarea, 
-input {
-  background-color: var(--table_background);
-  border: 1px solid var(--table_color);
-}
-
-details summary {
-  background-color: var(--table_background);
-  border: 1px solid var(--table_color);
-  padding: 0.1rem;
-  min-width: 29rem;
-  list-style-type: '🐝 ';
-}
-
-details[open] summary {
-  list-style-type: '🍯 ';
+  flex-grow: 1;
+  /* flex-basis: 100%; */
+  overflow-y: scroll;
+  column-count: 2;
 }
 
 #two-letter-lists input[type=number][value=0] {
   opacity: 0.5;
   background-color: red;
+}
+
+
+/* laptop / desktop */
+@media screen and (min-width: 800px) {
+
+  h1 {
+    font-size: 5rem;
+  }
+
+  .bee {
+    display: inline;
+    font-size: 4rem; 
+  }
+
+  #two-letter-lists dl {
+    column-count: 4;
+    column-gap: 4rem;
+  }
+
 }
