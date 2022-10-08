@@ -3,18 +3,8 @@
   src: url('./assets/HoneycombHappiness-ywnRm.ttf') format("truetype");
 }
 
-html, body, div, span, h1, h2, p, a, abbr, dl, dt, dd, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, details, footer, header, menu, nav, output, section, summary {  
-  margin: 0;  
-  padding: 0;  
-  border: 0;  
-  font-size: 100%;  
-  font: inherit;  
-  vertical-align: baseline; 
-  box-sizing: border-box;
-}
 
 :root {
-  --medium_gray: hsl(193, 5%, 43%);
   --table_color_dark: hsl(45, 100%, 34%);
   --table_color: goldenrod;
   --table_background: hsl(51, 100%, 90%);
@@ -24,6 +14,7 @@ html, body, div, span, h1, h2, p, a, abbr, dl, dt, dd, label, legend, table, cap
   --background: gold;
 }
 
+
 body {
   font-family: Verdana, Arial, sans-serif;
   /* margin: 0 2rem; */
@@ -32,14 +23,15 @@ body {
 
 header,
 main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  align-content: stretch;
-  gap: 0.5em;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* align-content: stretch; */
+  /* gap: 0.5em; */
   width: 100%;
 }
+
 
 h1 {
   font-family: HoneycombHappiness, Verdana, Arial, sans-serif; 
@@ -60,14 +52,14 @@ h2 {
   font-size: 2rem; 
 }
 
-p, 
-label,
-input[type=text] {
- margin: 0 0.2rem;
-}
 
 /* inputs */
 
+textarea {
+  /* flex: 1; */
+  width: 100%;
+  height: 25rem;
+}
 
 textarea, 
 input {
@@ -75,16 +67,12 @@ input {
   border: 1px solid var(--table_color);
 }
 
-textarea,
-table {
-  width: 100%;
-}
 
 details summary {
   background-color: var(--table_background);
   border: 1px solid var(--table_color);
   /* padding: 0.1rem; */
-  min-width: 29rem;
+  /* min-width: 29rem; */
   list-style-type: '🐝 ';
 }
 
@@ -93,7 +81,7 @@ details[open] summary {
 }
 
 #word-input {
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   align-items: stretch;
 }
@@ -102,10 +90,11 @@ details[open] summary {
   flex-grow: 2;
 }
 
-/* table styles */
+
+/* table */
 
 table {
-  align-self: stretch;
+  /* align-self: stretch; */
 
   border-collapse: collapse;
   margin-bottom: 1rem;
@@ -129,9 +118,15 @@ table th {
   padding: 0.15rem 0.3rem;
 }
 
-table th {
-  vertical-align: top;
+tbody input[type=number],
+#two-letter-lists input[type=number] {
+  font-size: 16px;
+  width: 3em;
+  border: none;
+  background-color: var(--table_background);
+  text-align: center;
 }
+
 
 /* zebra stripes */
 tr:nth-child(even),
@@ -162,6 +157,7 @@ tbody input[type=number],
   text-align: center;
 }
 
+
 /* two-letter list dl */
 
 dd {
@@ -190,11 +186,6 @@ dd {
   /* flex-basis: 100%; */
   overflow-y: scroll;
   column-count: 2;
-}
-
-#two-letter-lists input[type=number][value=0] {
-  opacity: 0.5;
-  background-color: red;
 }
 
 

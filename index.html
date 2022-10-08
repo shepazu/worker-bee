@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
   <title>Worker Bee</title>
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>">
@@ -18,14 +18,12 @@
   <main>
     <details id="bee-grid-details" open>
       <summary id="bee-grid-label">Paste bee hints here:</summary>
-      <textarea id="bee-grid" aria-labelledby="bee-grid-label" rows="25"></textarea>
+      <textarea id="bee-grid" aria-labelledby="bee-grid-label"></textarea>
     </details>
     <section id="stats-block"></section>
-    <section id="word-input">
-      <label id="bee-word-label" for="bee-word">Enter found words:</label>
+    <label id="bee-word-label" for="bee-word">Enter found words:
       <input id="bee-word" type="text">
-    </section>
-    
+    </label>
     <section id="grid-table"></section>
     <section id="two-letter-lists"></section>
   </main>
