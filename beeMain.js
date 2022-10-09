@@ -12,7 +12,11 @@ export class beeMain extends EventTarget {
     this.statsBlockContainer = document.getElementById('stats-block');
     this.gridTableContainer = document.getElementById('grid-table');
     this.twoLetterListContainer = document.getElementById('two-letter-lists');
-    
+    this.beeGridInput = document.getElementById('bee-grid');
+    this.beeWordInput = document.getElementById('bee-word');
+    this.backspaceButton = document.getElementById('backspace-button');
+    this.enterButton = document.getElementById('enter-button');
+
     this._init();
   }
   
@@ -22,12 +26,12 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _init() {
-    this.beeGridInput = document.getElementById('bee-grid');
     this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
-    this.beeWordInput = document.getElementById('bee-word');
     this.beeWordInput.addEventListener('change', this._addWord.bind(this));
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
+    this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
+    this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
   }
 
   /**
@@ -61,10 +65,18 @@ export class beeMain extends EventTarget {
     if (letterList) {
       this.lettersArray = letterList[0].split(/\s/);
 
-      const lettersEl = document.createElement('p');
-      lettersEl.append( this.lettersArray.join(' ') );
-      lettersEl.classList.add('letters_list');
-      this.lettersBlockContainer.append( lettersEl );
+      // const lettersEl = document.createElement('p');
+      // lettersEl.append( this.lettersArray.join(' ') );
+      // lettersEl.classList.add('letters_list');
+      // this.lettersBlockContainer.append( lettersEl );
+
+      for (const letter of this.lettersArray) {
+        const letterButton = document.createElement('button');
+        letterButton.append( letter );
+        letterButton.classList.add('letter_button', 'button');
+        letterButton.addEventListener('click', this._addLetter.bind(this) );
+        this.lettersBlockContainer.append( letterButton );
+      }
     }
   }
 
@@ -476,7 +488,7 @@ export class beeMain extends EventTarget {
 
   /**
    * Removes the word from the list of found words.
-  //  * @param {Event} event The event on the element.
+   * @param {Event} event The event on the element.
    * @private
    * @memberOf beeMain
    */
@@ -486,6 +498,28 @@ export class beeMain extends EventTarget {
     // update two-letter term and grid numbers
     this._updateCountByWord( word, false );
     target.parentNode.remove();
+  }
+
+  /**
+   * Adds a letter to the found word input.
+   * @param {Event} event The event on the element.
+   * @private
+   * @memberOf beeMain
+   */
+  _addLetter( event ) {
+    const target = event.target;
+    const letter = target.textContent;
+    this.beeWordInput.value += letter;
+  }
+
+  /**
+   * Removes a letter to the found word input.
+   * @param {Event} event The event on the element.
+   * @private
+   * @memberOf beeMain
+   */
+  _backspace() {
+    this.beeWordInput.value = this.beeWordInput.value.slice(0, -1);
   }
 
 }
