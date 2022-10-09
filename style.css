@@ -5,13 +5,19 @@
 
 
 :root {
+  --text_color: hsl(0, 0%, 10%);
   --table_color_dark: hsl(45, 100%, 34%);
-  --table_color: goldenrod;
+  --table_color: hsl(43, 74%, 49%);
   --table_background: hsl(51, 100%, 90%);
   --zebra_stripes: hsl(51, 100%, 80%);
   --table_header_text: white;
   --heading_text: goldenrod;
   --background: gold;
+
+  --accept: hsl(87, 60%, 60%);
+  --reject: hsl(323, 68%, 83%);
+  --remove: hsl(0, 0%, 50%);
+  --remove_active: hsl(348, 93%, 37%);
 }
 
 
@@ -19,6 +25,7 @@ body {
   font-family: Verdana, Arial, sans-serif;
   /* margin: 0 2rem; */
   background-color: var(--background);
+  color: var(--text_color);
 }
 
 header,
@@ -52,6 +59,12 @@ h2 {
   font-size: 2rem; 
 }
 
+.letters_list {
+  font-variant: small-caps;
+  font-size: 1.25rem;
+  margin-bottom: 0;
+}
+
 
 /* inputs */
 
@@ -65,6 +78,15 @@ textarea,
 input {
   background-color: var(--table_background);
   border: 1px solid var(--table_color);
+}
+
+#add-word-block {
+  display: flex;
+  margin-bottom: 0.5rem;;
+}
+
+#add-word-block.hidden {
+  display: none;
 }
 
 
@@ -188,6 +210,48 @@ dd {
   column-count: 2;
 }
 
+dd > a {
+  color: var(--text_color);
+  cursor: pointer;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 2.5px;
+}
+
+button[type=remove] {
+  background-color: transparent;
+  border: none;
+  font-size: 1.0rem;
+  font-weight: bold;
+  color: var(--remove);
+  margin-top: -1.5rem;
+}
+
+button[type=remove]:hover {
+  color: var(--remove_active);
+}
+
+/* support links */
+footer {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3rem;
+}
+
+footer a {
+  display: inline-block;
+  background-color: var(--table_color);
+  color: var(--table_header_text);
+  padding: 7px 12.5px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin-left: 20px;
+}
+
+footer a:hover {
+  background-color: var(--table_color_dark);
+}
+
 
 /* laptop / desktop */
 @media screen and (min-width: 800px) {
@@ -206,4 +270,44 @@ dd {
     column-gap: 4rem;
   }
 
+}
+
+/* feedback animations */
+
+.accept {
+  animation: accept 0.8s;
+}
+
+@keyframes accept {
+  0% {
+    background-color: var(--table_background);
+  }
+  30% {
+    background-color: var(--accept);
+  }
+  70% {
+    background-color: var(--accept);
+  }
+  100% {
+    background-color: var(--table_background);
+  }
+}
+
+.reject {
+  animation: reject 0.8s;
+}
+
+@keyframes reject {
+  0% {
+    background-color: var(--table_background);
+  }
+  30% {
+    background-color: var(--reject);
+  }
+  70% {
+    background-color: var(--reject);
+  }
+  100% {
+    background-color: var(--table_background);
+  }
 }
