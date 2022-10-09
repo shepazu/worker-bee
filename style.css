@@ -87,14 +87,6 @@ h2 {
   padding: 0.5rem;
 }
 
-
-/* .letters_list {
-  font-variant: small-caps;
-  font-size: 1.25rem;
-  margin-bottom: 0;
-} */
-
-
 .letter_button {
   font-variant: small-caps;
   font-size: 1.25rem;
@@ -109,6 +101,10 @@ textarea {
   /* flex: 1; */
   width: 100%;
   height: 25rem;
+}
+
+#bee-word {
+  font-size: 1.25rem;
 }
 
 textarea, 
