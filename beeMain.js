@@ -70,7 +70,9 @@ export class beeMain extends EventTarget {
       // lettersEl.classList.add('letters_list');
       // this.lettersBlockContainer.append( lettersEl );
 
-      for (const letter of this.lettersArray) {
+      for (let letterIndex = 0; letterIndex < this.lettersArray.length; letterIndex++) {
+        const letter = this.lettersArray[letterIndex].toLowerCase();
+        this.lettersArray[letterIndex] = letter;
         const letterButton = document.createElement('button');
         letterButton.append( letter );
         letterButton.classList.add('letter_button', 'button');
