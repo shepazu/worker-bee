@@ -59,12 +59,49 @@ h2 {
   font-size: 2rem; 
 }
 
-.letters_list {
+
+/* buttons */
+
+.button {
+  display: inline-block;
+  background-color: var(--table_color);
+  color: var(--table_header_text);
+  border: none;
+  padding: 3px 5px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  margin-left: 1rem;
+}
+
+.button:hover {
+  background-color: var(--table_color_dark);
+}
+
+/* letter buttons */
+#letters-block {
+  display: flex;
+  /* justify-content: space-around; */
+  justify-content: start;
+  /* gap: 0.5rem; */
+  padding: 0.5rem;
+}
+
+
+/* .letters_list {
   font-variant: small-caps;
   font-size: 1.25rem;
   margin-bottom: 0;
-}
+} */
 
+
+.letter_button {
+  font-variant: small-caps;
+  font-size: 1.25rem;
+  padding: 7px 12.5px;  
+  text-decoration: none;
+  display: inline-block;
+}
 
 /* inputs */
 
@@ -237,20 +274,10 @@ footer {
   margin-top: 3rem;
 }
 
-footer a {
-  display: inline-block;
-  background-color: var(--table_color);
-  color: var(--table_header_text);
+footer a.button {
   padding: 7px 12.5px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 16px;
-  margin-left: 20px;
 }
 
-footer a:hover {
-  background-color: var(--table_color_dark);
-}
 
 
 /* laptop / desktop */
