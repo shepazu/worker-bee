@@ -20,3 +20,77 @@ na-1 no-2
 ya-1 yo-1 
 
 -----
+achoo
+ahoy
+ancho
+anchovy
+annoy
+anon
+anyhoo
+cacao
+cannon
+canon
+canyon
+coach
+coca
+cocoa
+cocoon
+coho
+conch
+convoy
+havoc
+honcho
+hooch
+nacho
+noon
+nova
+yahoo
+yoohoo
+
+------
+sorting:
+
+conch
+cocoa
+coca
+coho
+convoy
+cocoon
+
+coca (4)
+cocoa (5)
+cocoon (6)
+coho (4)
+conch (5)
+convoy (6)
+------
+Randomized:
+
+
+yoohoo
+coach
+honcho
+noon
+convoy
+anchovy
+nacho
+annoy
+cacao
+nova
+canyon
+anon
+conch
+anyhoo
+cannon
+coca
+canon
+havoc
+achoo
+yahoo
+cocoon
+hooch
+coho
+cocoa
+ancho
+ahoy
+

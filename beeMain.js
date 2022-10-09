@@ -4,6 +4,11 @@ export class beeMain extends EventTarget {
   constructor() {
     super();
     this.hintText = null;
+    this.lettersArray = null;
+    this.letterCountArray = null;
+    this.wordList = [];
+    this.addWordContainer = document.getElementById('add-word-block');
+    this.lettersBlockContainer = document.getElementById('letters-block');
     this.statsBlockContainer = document.getElementById('stats-block');
     this.gridTableContainer = document.getElementById('grid-table');
     this.twoLetterListContainer = document.getElementById('two-letter-lists');
@@ -22,6 +27,7 @@ export class beeMain extends EventTarget {
 
     this.beeWordInput = document.getElementById('bee-word');
     this.beeWordInput.addEventListener('change', this._addWord.bind(this));
+    this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
   }
 
   /**
@@ -41,6 +47,7 @@ export class beeMain extends EventTarget {
       this._findTwoLetterList();
 
       target.closest('details').removeAttribute('open');
+      this.addWordContainer.classList.remove('hidden');
     }
   }
 
@@ -50,10 +57,14 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _findLetterList() {
-    // const letterList = this.hintText.match(/(\w\s){6}\w/);
     const letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
-      const letterArray = letterList[0].split(/\s/);
+      this.lettersArray = letterList[0].split(/\s/);
+
+      const lettersEl = document.createElement('p');
+      lettersEl.append( this.lettersArray.join(' ') );
+      lettersEl.classList.add('letters_list');
+      this.lettersBlockContainer.append( lettersEl );
     }
   }
 
@@ -87,10 +98,6 @@ export class beeMain extends EventTarget {
     const wordLengths = this._findWordLengthCounts();
     const totals = this._findWordLengthTotals();
 
-    // console.log('header', header);
-    // console.log('wordLengths', wordLengths);
-    // console.log('totals', totals);
-
     const gridTableArray = wordLengths;
     gridTableArray.unshift(header);
     gridTableArray.push(totals);
@@ -105,13 +112,10 @@ export class beeMain extends EventTarget {
    * @return {Array} An array of header word counts.
    */
   _findGridHeader() {
-    // const gridHeaderList = this.hintText.match(/(\d+).+Σ/);
     const gridHeaderList = this.hintText.match(/(\d[\s+\t+].+Σ)/);
-    // console.log('gridHeaderList', gridHeaderList);
     if (gridHeaderList) {
-      // const gridHeaderArray = gridHeaderList[0].trim().replace(/[\s\t]/g, ' ').split(/\s+/);
       const gridHeaderArray = this._whitespacedStringToArray( gridHeaderList[0] );
-      // console.log('gridHeaderArray', gridHeaderArray);
+      this.letterCountArray = gridHeaderArray.slice(0, -1).map( (str) => parseInt(str, 10) );
       gridHeaderArray.unshift('');
       return gridHeaderArray;
     }
@@ -125,19 +129,11 @@ export class beeMain extends EventTarget {
    * @return {Array} An array of arrays of letters and word counts.
    */
   _findWordLengthCounts() {
-    // const wordLengthLetterArray = this.hintText.match(/([a-z]){1}:\s.+\d/g);
     const wordLengthLetterArray = this.hintText.match(/\n([A-Za-z]){1}:\s.+\d/g);
-    // console.log(wordLengthLetterArray);
     const gridTableArray = [];  
     if (wordLengthLetterArray) {
       const wordLengthRows = [];
       for (let row of wordLengthLetterArray) {
-        // // console.log('row', row);
-        // const wordLengthRowArray = row.trim().replace(/[\s\t]/g, ' ').split(/[\s+]/);
-        // const wordLengthRowArray = row.split(/[\s+\t+]/);
-        // console.log('wordLengthRowArray', wordLengthRowArray);
-
-        // const wordLengthRowArray = row.trim().split(/[\s\t]/);
         const wordLengthRowArray = this._whitespacedStringToArray( row );
         wordLengthRows.push(wordLengthRowArray);
       }
@@ -164,8 +160,6 @@ export class beeMain extends EventTarget {
   _findWordLengthTotals() {
     const wordLengthTotalList = this.hintText.match(/Σ:\s.+\d/);
     if (wordLengthTotalList) {
-      // const wordLengthTotalArray = wordLengthTotalList[0].split(/[\s+\t+]/);
-      // const wordLengthTotalArray = wordLengthTotalList[0].trim().replace(/[\s\t]/g, ' ').split(/[\s+]/);
       const wordLengthTotalArray = this._whitespacedStringToArray( wordLengthTotalList[0] );
       return wordLengthTotalArray;
     }
@@ -182,9 +176,6 @@ export class beeMain extends EventTarget {
     const trimmed = str.trim();
     const replaced = trimmed.replace(/\t+/g, ' ').replace(/\s+/g, ' ');
     const strArray = replaced.split(/\s+/);
-    // console.log('trimmed', trimmed);
-    // console.log('replaced', replaced);
-    // console.log('strArray', strArray);
     return strArray; 
   }
 
@@ -224,7 +215,7 @@ export class beeMain extends EventTarget {
         container = tableFoot;
       }
 
-      const letterHead = row[0];
+      const letterHead = row[0].toUpperCase();
       const rowEl = container.insertRow();
       for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
         const column = row[columnIndex];
@@ -306,70 +297,88 @@ export class beeMain extends EventTarget {
     const target = event.target;
     const wordList = target.value.trim();
 
-    // console.log('wordList', wordList);
+    // clear the input
     target.value = '';
 
     if (wordList) {
       const wordArray = wordList.split(/\W+/);
       for (let eachWord of wordArray) {
         eachWord = eachWord.toLowerCase();
-        // see if the word has already been entered
-        const prefoundWord = document.getElementById( eachWord );
-        if (!prefoundWord) {
 
+        // find length of word
+        const wordLength = eachWord.length;
+
+        // see if the word has already been entered
+        const prefoundWord = document.getElementById( `word-${eachWord}` );
+        if (!this.letterCountArray.includes(wordLength)) {
+          this.beeWordInput.classList.add('reject');
+          console.warn('Wrong number of letters');
+        } else if (prefoundWord) {
+          this.beeWordInput.classList.add('reject');
+          console.warn('Word already found');
+        } else{    
           // find first letter
           const firstLetter = eachWord.substring(0, 1).toUpperCase();
 
           // find matching two-letter category
           const twoLetters = eachWord.substring(0, 2).toUpperCase();
 
-          console.log('_addWord:twoLetters', twoLetters);
-
-          // find length of word
-          const wordLength = eachWord.length;
-
           const twoLetterTerm = document.getElementById( twoLetters );
 
-          if (twoLetterTerm) {
-            const defEl = document.createElement('dd');
-            defEl.id = eachWord;
+          // make sure all letters in word are in letters list
+          const isCorrectLetters = eachWord.split('').every((letter) => this.lettersArray.includes(letter));
 
-            const wordEl = document.createElement('span');
+          if (!twoLetterTerm) {
+            this.beeWordInput.classList.add('reject');
+            console.warn('Doesn\'t match starting letters');
+          } else if (!isCorrectLetters) {
+            this.beeWordInput.classList.add('reject');
+            console.warn('Doesn\'t match letters');
+          } else {
+            // word seems to be a valid entry, modulo inclusion in the game dictionary,
+            //  so insert it into the two-letter list
+            this.beeWordInput.classList.add('accept');
+
+            // add word to master word list
+            this.wordList.push(eachWord);
+
+            const defEl = document.createElement('dd');
+            defEl.classList.add(twoLetters);
+            defEl.id = `word-${eachWord}`;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'remove';
+            removeButton.setAttribute('aria-label', `Remove ${eachWord} from list`);
+            removeButton.append( '×' );
+            removeButton.addEventListener('click', this._removeWord.bind(this) );
+            
+
+            const wordEl = document.createElement('a');
+            wordEl.href = `https://www.wordnik.com/words/${eachWord}`;
+            wordEl.target= '_blank';
             wordEl.append( eachWord );
 
             const wordLengthEl = document.createElement('span');
             wordLengthEl.append( `(${wordLength})` );
 
-            defEl.append( wordEl, ' ', wordLengthEl );
+            defEl.append( removeButton, wordEl, ' ', wordLengthEl );
 
             twoLetterTerm.after( defEl );
 
-            // decrement the two-letter count
-            let countEl = twoLetterTerm.querySelector('input[type=number]');
-            // countEl.value = --countEl.value;
-            this._setNumberInputValue( countEl, --countEl.value );
+            // sort words alphabetically
+            const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${twoLetters}`));
+            siblingWords.sort( (a, b) => {
+              if (a.id < b.id) {
+                return -1;
+              } else if (a.id > b.id) {
+                return 1;
+              }
+              return 0;
+            });
+            twoLetterTerm.after( ...siblingWords );
 
-            // decrement the word-grid count
-            let gridCountEl = document.getElementById(`${firstLetter}-${wordLength}`);
-            if (gridCountEl) {
-              // gridCountEl.value = --gridCountEl.value;
-              this._setNumberInputValue( gridCountEl, --gridCountEl.value );
-            }
-
-            // decrement the word-grid letter total count
-            let gridTotalCountEl = document.getElementById(`${firstLetter}-Σ`);
-            if (gridTotalCountEl) {
-              // gridTotalCountEl.value = --gridTotalCountEl.value;
-              this._setNumberInputValue( gridTotalCountEl, --gridTotalCountEl.value );
-            }
-
-            // decrement the word-grid word-length total count
-            let gridWordLengthTotalEl = document.getElementById(`Σ-${wordLength}`);
-            gridWordLengthTotalEl.replaceChildren(--gridWordLengthTotalEl.textContent);
-
-            // decrement the word-grid total word count
-            let gridWordTotalEl = document.getElementById(`Σ-Σ`);
-            gridWordTotalEl.replaceChildren(--gridWordTotalEl.textContent);
+            // update two-letter term and grid numbers
+            this._updateCountByWord( eachWord );
           }
         }
       }
@@ -396,6 +405,50 @@ export class beeMain extends EventTarget {
   }
 
   /**
+   * Updates the counts in a number input.
+   * @param {string} value The value for the input element.
+   * @param {string} id The id for the input element.
+   * @private
+   * @memberOf beeMain
+   * @return {Element} The number input element.
+   */
+  _updateCountByWord( word, isDecrement = true ) {
+    const modifier = isDecrement ? -1 : 1; 
+
+    // find first letter
+    const firstLetter = word.substring(0, 1).toUpperCase();
+    // find matching two-letter category
+    const twoLetters = word.substring(0, 2).toUpperCase();
+    const wordLength = word.length;
+    const twoLetterTerm = document.getElementById( twoLetters );
+
+
+    // decrement or increment the two-letter count
+    let countEl = twoLetterTerm.querySelector('input[type=number]');
+    this._setNumberInputValue( countEl, (+countEl.value + modifier) );
+
+    // decrement or increment the word-grid count
+    let gridCountEl = document.getElementById(`${firstLetter}-${wordLength}`);
+    if (gridCountEl) {
+      this._setNumberInputValue( gridCountEl, (+gridCountEl.value + modifier) );
+    }
+
+    // decrement or increment the word-grid letter total count
+    let gridTotalCountEl = document.getElementById(`${firstLetter}-Σ`);
+    if (gridTotalCountEl) {
+      this._setNumberInputValue( gridTotalCountEl, (+gridTotalCountEl.value + modifier) );
+    }
+
+    // decrement or increment the word-grid word-length total count
+    let gridWordLengthTotalEl = document.getElementById(`Σ-${wordLength}`);
+    gridWordLengthTotalEl.replaceChildren( (+gridWordLengthTotalEl.textContent + modifier) );
+
+    // decrement or increment the word-grid total word count
+    let gridWordTotalEl = document.getElementById(`Σ-Σ`);
+    gridWordTotalEl.replaceChildren( (+gridWordTotalEl.textContent + modifier) );
+  }
+
+  /**
    * Sets the value of a number input element.
    * @param {Element} target The input element to be set.
    * @param {string} value The value for the input element.
@@ -419,4 +472,20 @@ export class beeMain extends EventTarget {
   //   const target = event.target;
   //   this._setNumberInputValue( target, target.value );
   // }
+
+
+  /**
+   * Removes the word from the list of found words.
+  //  * @param {Event} event The event on the element.
+   * @private
+   * @memberOf beeMain
+   */
+  _removeWord( event ) {
+    const target = event.target;
+    const word = target.parentNode.id.replace('word-', '');
+    // update two-letter term and grid numbers
+    this._updateCountByWord( word, false );
+    target.parentNode.remove();
+  }
+
 }
