@@ -17,7 +17,7 @@
   </header>
   <main>
     <details id="bee-grid-details" open>
-      <summary id="bee-grid-label">Paste bee hints here:</summary>
+      <summary id="bee-grid-label">Paste bee letter list, grid, and two-letter list hints here:</summary>
       <textarea id="bee-grid" aria-labelledby="bee-grid-label"></textarea>
     </details>
     <section id="letters-block"></section>
@@ -30,8 +30,22 @@
     </section>
     <section id="grid-table"></section>
     <section id="list-block"></section>
-    <section id="two-letter-lists"></section>
-    <section id="discovery-order-list"></section>
+
+    <section id="list-tabs" class="tabs hidden">
+      <div class="tab">
+        <input type="radio" class="tab_selector" id="two-letter-lists-tab" name="word_list_tabs" checked>
+        <label for="two-letter-lists-tab">Two letter lists</label>
+        <div id="two-letter-lists" class="tab_content">
+        </div>
+      </div>
+      <div class="tab">
+        <input type="radio" class="tab_selector" id="discovery-order-list-tab" name="word_list_tabs">
+        <label for="discovery-order-list-tab">Discovery order</label>
+        <div id="discovery-order-list" class="tab_content">
+        </div>
+      </div>
+    </section>
+
   </main>
   <footer>
     <a href="./instructions.html" class="button">instructions</a>
