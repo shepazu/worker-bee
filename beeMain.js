@@ -80,16 +80,25 @@ export class beeMain extends EventTarget {
       queen_bee: null,
     };
 
+    this.mode = 'hints';
+
     // DOM elements
     this.addWordContainer = document.getElementById('add-word-block');
     this.lettersBlockContainer = document.getElementById('letters-block');
     this.statsBlockContainer = document.getElementById('stats-block');
     this.gridTableContainer = document.getElementById('grid-table');
-    this.twoLetterListContainer = document.getElementById('two-letter-lists');
     this.beeGridInput = document.getElementById('bee-grid');
     this.beeWordInput = document.getElementById('bee-word');
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
+
+    this.listTabsContainer = document.getElementById('list-tabs');
+    this.twoLetterListsTab = document.getElementById('two-letter-lists-tab');
+    this.twoLetterListContainer = document.getElementById('two-letter-lists');
+    this.discoveryOrderListTab = document.getElementById('discovery-order-list-tab');
+    this.discoveryOrderListContainer = document.getElementById('discovery-order-list');
+    this.discoveryOrderList = null;
+    
     this.wordCountStatEl = null;
     this.pointStatEl = null;
     this.rankStatEl = null;
@@ -128,19 +137,42 @@ export class beeMain extends EventTarget {
       const hasLetters = this._findLetterList();
       if (!hasLetters) {
         this._showMessage('No list of letters found', 'warn');
+      } else {
+        this.listTabsContainer.classList.remove('hidden');
+        this._createDiscoveryOrderList();
+
+        const hasStats = this._findStats();
+        if (!hasStats) {
+          // no stats, only letters, so default to the discovered word tab
+          this.discoveryOrderListTab.checked = true;
+          // console.log('discoveryOrderListTab');
+
+          this.mode = 'no-hints';
+        } else {      
+          this._findGrid();
+          this._findTwoLetterList();
+
+          this.mode = 'hints';
+          // note time hints are posted
+          this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
+
+          // add any existing words in word list to two-letter lists
+          this.wordList.forEach( (entry) => {
+            const word = entry.word;
+            
+            // add word to discovery-order list
+            this._displayDiscoveryOrderListWord( word, 'className', entry.isPangram );
+
+            // find matching two-letter category
+            const twoLetters = word.substring(0, 2).toUpperCase();
+            this._displayTwoLetterListWord( word, twoLetters, entry.isPangram );
+          });
+
+        }
+
+        target.closest('details').removeAttribute('open');
+        this.addWordContainer.classList.remove('hidden');
       }
-
-      const hasStats = this._findStats();
-      if (hasStats) {
-        this._findGrid();
-        this._findTwoLetterList();
-
-        // note time hints are posted
-        this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
-      }
-
-      target.closest('details').removeAttribute('open');
-      this.addWordContainer.classList.remove('hidden');
     }
   }
 
@@ -152,6 +184,7 @@ export class beeMain extends EventTarget {
   _findLetterList() {
     const letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
+      this.lettersBlockContainer.replaceChildren('');
       this.lettersArray = letterList[0].split(/\s/);
 
       for (let letterIndex = 0; letterIndex < this.lettersArray.length; letterIndex++) {
@@ -212,6 +245,7 @@ export class beeMain extends EventTarget {
         {
           title: 'word-count',
           value: this.totalWords,
+          current: this.wordsFound,
         },
       ]
     );
@@ -236,19 +270,25 @@ export class beeMain extends EventTarget {
         {
           title: 'points',
           value: this.totalPoints,
+          current: this.pointScore,
         },
         {
           title: 'rank',
-          value: this.rankings[0].name,
+          value: this.rank,
+          current: this.rank,
         },
       ]
     );
 
-    this.pointStatEl = document.getElementById('points-current');
+    if (this.pointStatEl) {
+      this.pointStatEl = document.getElementById('points-current');
+    }
 
     // remove unnecessary points from ranking
     this.rankStatEl = document.getElementById('rank-stat');
-    this.rankStatEl.replaceChildren( this.rankings[0].name );
+    if (this.rankStatEl) {
+      this.rankStatEl.replaceChildren( this.rankings[0].name );
+    }
   }
 
   /**
@@ -264,12 +304,14 @@ export class beeMain extends EventTarget {
       {
         title: 'pangrams',
         value: this.pangrams,
+        current: this.pangramsFound,    
       },
     ];
     if (this.perfectPangrams) {
       valuesArray.push({
         title: 'perfect',
         value: this.perfectPangrams,
+        current: this.perfectPangramsFound,
       });
     }
     this._createStatCard( 'pangrams', valuesArray );
@@ -295,6 +337,7 @@ export class beeMain extends EventTarget {
         {
           title: 'bingo',
           value: null,
+          current: null,
         },
       ]);
       this.bingoStatEl = document.getElementById('bingo-stat');
@@ -324,7 +367,7 @@ export class beeMain extends EventTarget {
 
       const currentValue = document.createElement('span');
       currentValue.id = `${value.title}-current`;
-      currentValue.append( '0' );
+      currentValue.append( value.current );
 
       const totalValue = document.createElement('span');
       totalValue.id = `${value.title}-total`;
@@ -352,7 +395,7 @@ export class beeMain extends EventTarget {
     gridTableArray.unshift(header);
     gridTableArray.push(totals);
 
-    this._createTable(gridTableArray);
+    this._createGrid(gridTableArray);
   }
 
   /**
@@ -451,7 +494,7 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _createTable( gridTableArray ) {
+  _createGrid( gridTableArray ) {
     const gridTable = document.createElement('table');
     const tableHead = gridTable.createTHead();
     const tableBody = gridTable.createTBody();
@@ -509,15 +552,22 @@ export class beeMain extends EventTarget {
   }
 
   /**
+   * Creates discovery-order list output.
+   * @private
+   * @memberOf beeMain
+   */
+  _createDiscoveryOrderList() {
+    this.discoveryOrderList = document.createElement('ol');
+    this.discoveryOrderListContainer.replaceChildren( this.discoveryOrderList ); 
+  }
+
+  /**
    * Creates two letter list output.
    * @param {Array} twoLetterArray The lest of two letter codes, with the first two letter and the length of the word.
    * @private
    * @memberOf beeMain
    */
   _createTwoLetterList( twoLetterArray ) {
-    const heading = document.createElement('h2');
-    heading.append( 'Two letter list' );
-
     const list = document.createElement('dl');
 
     for (const twoLetterCount of twoLetterArray) {
@@ -544,7 +594,7 @@ export class beeMain extends EventTarget {
       list.append( twoLetterTermEl );
     }
 
-    this.twoLetterListContainer.replaceChildren(heading, list); 
+    this.twoLetterListContainer.replaceChildren( list ); 
   }
 
   /**
@@ -573,8 +623,10 @@ export class beeMain extends EventTarget {
           const wordLength = eachWord.length;
   
           // see if the word has already been entered
-          const prefoundWord = document.getElementById( `word-${eachWord}` );
-          if (!this.letterCountArray.includes(wordLength)) {
+          // const prefoundWord = document.getElementById( `word-${word}` );
+          // const prefoundWord = this.wordList.find(() ==> );
+          const prefoundWord = this.wordList.find(({ word }) => word === eachWord);
+          if (this.mode === 'hints' && !this.letterCountArray.includes(wordLength)) {
             this.beeWordInput.classList.add('reject');
             this._showMessage('Wrong number of letters');
           } else if (prefoundWord) {
@@ -592,7 +644,7 @@ export class beeMain extends EventTarget {
             // make sure all letters in word are in letters list
             const isCorrectLetters = eachWord.split('').every((letter) => this.lettersArray.includes(letter));
   
-            if (!twoLetterTerm) {
+            if (this.mode === 'hints' && !twoLetterTerm) {
               this.beeWordInput.classList.add('reject');
               this._showMessage('Doesn\'t match starting letters');
             } else if (!isCorrectLetters) {
@@ -602,74 +654,135 @@ export class beeMain extends EventTarget {
               // word seems to be a valid entry, modulo inclusion in the game dictionary,
               //  so insert it into the two-letter list
               this.beeWordInput.classList.add('accept');
-  
+   
+              const isPangram = this._checkPangram( eachWord );
+              this._checkBingo( firstLetter );
+
               // add word to master word list
               this.wordList.push({
                 word: eachWord,
                 timestamp: Date.now(),
+                isPangram,
+                isPerfectPangram: null,
               });
 
-              console.log('this.wordList', this.wordList);
+              // console.log('this.wordList', this.wordList);
 
               this.wordsFound = this.wordList.length;
               this._updateWordCount();
 
+              // // add word to discovery-order list
+              this._displayDiscoveryOrderListWord( eachWord, 'className', isPangram );
 
-              const isPangram = this._checkPangram( eachWord );
-              this._checkBingo( firstLetter );
-
-              const defEl = document.createElement('dd');
-              defEl.classList.add(twoLetters);
-              defEl.id = `word-${eachWord}`;
-  
-              const removeButton = document.createElement('button');
-              removeButton.type = 'remove';
-              removeButton.setAttribute('aria-label', `Remove ${eachWord} from list`);
-              removeButton.append( '×' );
-              removeButton.addEventListener('click', this._removeWord.bind(this) );
-              
-  
-              const wordEl = document.createElement('a');
-              wordEl.href = `https://www.wordnik.com/words/${eachWord}`;
-              wordEl.target= '_blank';
-              wordEl.append( eachWord );
-
-              if (isPangram) {
-                wordEl.classList.add('pangram-word');
+              // add word to appropriate two-letter list        
+              if (twoLetterTerm) {
+                this._displayTwoLetterListWord( eachWord, twoLetters, isPangram );
               }
-
-              const wordLengthEl = document.createElement('span');
-              wordLengthEl.append( `(${wordLength})` );
-  
-              defEl.append( removeButton, wordEl, ' ', wordLengthEl );
-  
-              twoLetterTerm.after( defEl );
-  
-              // sort words alphabetically
-              const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${twoLetters}`));
-              siblingWords.sort( (a, b) => {
-                if (a.id < b.id) {
-                  return -1;
-                } else if (a.id > b.id) {
-                  return 1;
-                }
-                return 0;
-              });
-              twoLetterTerm.after( ...siblingWords );
-  
-              // update two-letter term and grid numbers
-              this._updateCountByWord( eachWord );
 
               // update score
-              this._updateScore(wordLength);
-              if (isPangram) {
-                this._updateScore(7);
-              }
+              this._updateScore(wordLength, isPangram);
             }
           }
         }
       }
     }
+  }
+
+  /**
+   * Adds a word to the discovery-order list.
+   * @param {string} word The word to be added.
+   * @private
+   * @memberOf beeMain
+   */
+  _displayDiscoveryOrderListWord( word, className, isPangram ) {
+    // add word to discovery-order list
+    const wordDefEl = this._createWordListItem( word, false, className, isPangram );
+
+    // get timestamp of entry
+    const wordEntry = this.wordList.find(( entry ) => entry.word === word);
+
+    const millis = wordEntry.timestamp - this.timestamps.start;
+    // const seconds = Math.floor(millis / 1000);    
+    const timeEl = document.createElement('time');
+    // timeEl.append( ` ${seconds}s` );
+    timeEl.append( this._formatTime(millis) );
+    wordDefEl.append( ' ', timeEl );
+
+    this.discoveryOrderList.append( wordDefEl );
+  }
+
+  /**
+   * Adds a word to the appropriate two-letter list.
+   * @param {string} word The word to be added.
+   * @private
+   * @memberOf beeMain
+   */
+  _displayTwoLetterListWord( word, className, isPangram ) {
+    const twoLetterTerm = document.getElementById( className );
+
+    const wordDefEl = this._createWordListItem( word, true, className, isPangram )
+    twoLetterTerm.after( wordDefEl );
+
+    // sort words alphabetically
+    const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${className}`));
+    siblingWords.sort( (a, b) => {
+      if (a.id < b.id) {
+        return -1;
+      } else if (a.id > b.id) {
+        return 1;
+      }
+      return 0;
+    });
+    twoLetterTerm.after( ...siblingWords );
+
+    // update two-letter term and grid numbers
+    this._updateGridCountsByWord( word );              
+  }
+
+  /**
+   * Creates a list element for a word.
+   * @param {string} word The word to be added.
+   * @param {Boolean} isTwoLetterItem Whether this is for the two-letter lists or not.
+   * @param {string} className A class for the element.
+   * @param {Boolean} isPangram Whether this word is a pangram or not.
+   * @private
+   * @memberOf beeMain
+   * @return {Element} The resulting word list element.
+   */
+  _createWordListItem( word, isTwoLetterItem, className, isPangram ) {
+    let itemTag = 'dd';
+    let itemId = `${word}-two-letters-word`;
+    if (!isTwoLetterItem) {
+      itemTag = 'li';
+      itemId = `${word}-discovery-word`;
+    }
+    const defEl = document.createElement(itemTag);
+    defEl.classList.add(className);
+    defEl.id = itemId;
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'remove';
+    removeButton.setAttribute('aria-label', `Remove ${word} from list`);
+    removeButton.append( '×' );
+    removeButton.addEventListener('click', this._removeWord.bind(this) );
+    
+    const wordEl = document.createElement('a');
+    wordEl.href = `https://www.wordnik.com/words/${word}`;
+    wordEl.target= '_blank';
+    wordEl.append( word );
+
+    if (isPangram) {
+      wordEl.classList.add('pangram-word');
+    }
+
+    const wordLengthEl = document.createElement('span');
+    wordLengthEl.append( `(${word.length})` );
+
+    defEl.append( removeButton, wordEl, ' ', wordLengthEl );
+
+    // parentEl.after( defEl );
+
+    return defEl;
   }
 
   /**
@@ -699,7 +812,7 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    * @return {Element} The number input element.
    */
-  _updateCountByWord( word, isDecrement = true ) {
+  _updateGridCountsByWord( word, isDecrement = true ) {
     const modifier = isDecrement ? -1 : 1; 
 
     // find first letter
@@ -739,7 +852,7 @@ export class beeMain extends EventTarget {
 
     if (totalWordsLeft === 0) {
       // note time queen bee is reached
-      this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
+      this.timestamps.queen_bee =  Date.now(); // start, genius, hints, definitions, queen_bee
     }
   }
 
@@ -776,9 +889,11 @@ export class beeMain extends EventTarget {
     }
 
     // update pangram display
-    this.pangramStatEl.replaceChildren(this.pangramsFound);
-    if (this.perfectPangramStatEl) {
-      this.perfectPangramStatEl.replaceChildren(this.perfectPangramsFound);
+    if (this.pangramStatEl) {
+      this.pangramStatEl.replaceChildren(this.pangramsFound);
+      if (this.perfectPangramStatEl) {
+        this.perfectPangramStatEl.replaceChildren(this.perfectPangramsFound);
+      }
     }
 
     return isPangram;
@@ -813,16 +928,28 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    * @return {Element} The number input element.
    */
-  _updateScore( letterCount, isIncrement = true ) {
+  _updateScore( letterCount, isPangram, isIncrement = true ) {
     const modifier = isIncrement ? 1 : -1;
+
+    // point constants
+    const fourLetterPoints = 1;
+    const longerWordPoints = letterCount;
+    const pangramBonusPoints = 7;
+
     if (letterCount === 4) {
-      this.pointScore += modifier;
+      this.pointScore += (fourLetterPoints * modifier);
     } else {
-      this.pointScore += (letterCount * modifier);
+      this.pointScore += (longerWordPoints * modifier);
+    }
+
+    if (isPangram) {
+      this.pointScore += (pangramBonusPoints * modifier);
     }
 
     // update score display
-    this.pointStatEl.replaceChildren(this.pointScore);
+    if (this.pointStatEl) {
+      this.pointStatEl.replaceChildren(this.pointScore);
+    }
 
     // find ranking
     let rank = null;
@@ -835,7 +962,9 @@ export class beeMain extends EventTarget {
     }
 
     this.rank = rank;
-    this.rankStatEl.replaceChildren( this.rank );
+    if (this.rankStatEl) {
+      this.rankStatEl.replaceChildren( this.rank );
+    }
   }
 
   /**
@@ -853,7 +982,9 @@ export class beeMain extends EventTarget {
     // } else {
     //   this.pointScore += (letterCount * modifier);
     // }
-    this.wordCountStatEl.replaceChildren( this.wordsFound );
+    if (this.wordCountStatEl) {
+      this.wordCountStatEl.replaceChildren( this.wordsFound );
+    }
   }
 
   // /**
@@ -876,15 +1007,19 @@ export class beeMain extends EventTarget {
    */
   _removeWord( event ) {
     const target = event.target;
-    const word = target.parentNode.id.replace('word-', '');
+    const targetWord = target.parentNode.id.split('-')[0];
     // update two-letter term and grid numbers
-    this._updateCountByWord( word, false );
-    this._updateScore( word.length, false );
-    const isPangram = this._checkPangram( word, false );
-    if (isPangram) {
-      this._updateScore(7, false);
-    }
-    target.parentNode.remove();
+    this._updateGridCountsByWord( targetWord, false );
+    const isPangram = this._checkPangram( targetWord, false );
+    this._updateScore( targetWord.length, isPangram, false );
+
+    const twoLetterEntry = document.getElementById(`${targetWord}-two-letters-word`); 
+    twoLetterEntry.remove();
+    const discoveryEntry = document.getElementById(`${targetWord}-discovery-word`); 
+    discoveryEntry.remove();
+
+    const wordIndex = this.wordList.findIndex(({ word }) => word === targetWord);
+    this.wordList.splice( wordIndex, 1 );
   }
 
   /**
@@ -907,6 +1042,39 @@ export class beeMain extends EventTarget {
    */
   _backspace() {
     this.beeWordInput.value = this.beeWordInput.value.slice(0, -1);
+  }
+
+  /**
+   * Returns milliseconds into hh:mm:ss format.
+   * @param {Number} milliseconds The milliseconds to be converted.
+   * @private
+   * @memberOf beeMain
+   * @return {string} The time in hh:mm:ss format.
+   */
+  _formatTime( milliseconds ) {
+    const hours = Math.floor((milliseconds / 1000 / 60 / 60) % 24);
+    const minutes = Math.floor((milliseconds / 1000 / 60) % 60);
+    const seconds = Math.floor((milliseconds / 1000) % 60);
+
+    let time = '';
+    if (hours) {
+      time += `${hours}h`;
+    }
+
+    if (minutes) {
+      time += `${minutes}m`;
+    }
+
+    if (seconds) {
+      time += `${seconds}s`;
+    }
+
+    // return [
+    //     hours.toString().padStart(2, '0'),
+    //     minutes.toString().padStart(2, '0'),
+    //     seconds.toString().padStart(2, '0')
+    // ].join(':');
+    return time;
   }
 
   /**
