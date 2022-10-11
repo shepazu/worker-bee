@@ -1,8 +1,9 @@
 @font-face {
-  font-family: HoneycombHappiness;
-  src: url('./assets/HoneycombHappiness-ywnRm.ttf') format("truetype");
+  font-family: 'HoneycombHappiness';
+  src: local('HoneycombHappiness'),
+       local('./assets/HoneycombHappiness-ywnRm.ttf'),
+       url('./assets/HoneycombHappiness.woff2') format('woff2');
 }
-
 
 :root {
   --text_color: hsl(0, 0%, 10%);
@@ -78,6 +79,11 @@ h2 {
   background-color: var(--table_color_dark);
 }
 
+kbd.button {
+  margin: 0;
+  font-size: 14px;
+}
+
 /* letter buttons */
 #letters-block {
   display: flex;
@@ -93,6 +99,10 @@ h2 {
   padding: 7px 12.5px;  
   text-decoration: none;
   display: inline-block;
+}
+
+.center_letter {
+  border: 4px solid var(--table_color_dark);
 }
 
 /* inputs */
@@ -145,6 +155,44 @@ details[open] summary {
   flex-grow: 2;
 }
 
+/* stats */
+
+#stats-block {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat_card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 4rem;
+}
+
+.stats_title {
+  /* font-size: 16px; */
+  font-variant: small-caps;
+  margin: 0;
+  padding: 0 0 1px 0;
+}
+
+.stat_value {
+  margin: 0;
+  padding: 0;
+  padding: 0 0 1px 0;
+}
+
+/* #rank-stat {
+  font-weight: bold;
+} */
+
+#bingo-stat {
+  font-size: 1.5rem;
+  font-weight: 100;
+}
 
 /* table */
 
@@ -248,6 +296,10 @@ dd > a {
   cursor: pointer;
   text-decoration-thickness: 0.05em;
   text-underline-offset: 2.5px;
+}
+
+.pangram-word {
+  font-weight: bold;
 }
 
 button[type=remove] {

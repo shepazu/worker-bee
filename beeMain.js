@@ -3,10 +3,84 @@ window.addEventListener('load', () => new beeMain());
 export class beeMain extends EventTarget {
   constructor() {
     super();
+
     this.hintText = null;
     this.lettersArray = null;
+    this.statsArray = null;
     this.letterCountArray = null;
     this.wordList = [];
+    this.totalWords = null;
+    this.wordsFound = 0;
+    this.totalPoints = null;
+    this.pointScore = 0;
+    this.pangrams = 0;
+    this.pangramsFound = 0;
+    this.perfectPangrams = 0;
+    this.perfectPangramsFound = 0;
+    this.rank = 'Beginner';
+    this.rankings = [
+      {
+        name: 'Beginner',
+        percentage: 0,
+        score: null,
+      },
+      {
+        name: 'Good Start',
+        percentage: 0.02,
+        score: null,
+      },
+      {
+        name: 'Moving Up',
+        percentage: 0.05,
+        score: null,
+      },
+      {
+        name: 'Good',
+        percentage: 0.08,
+        score: null,
+      },
+      {
+        name: 'Solid',
+        percentage: 0.15,
+        score: null,
+      },
+      {
+        name: 'Nice',
+        percentage: 0.25,
+        score: null,
+      },
+      {
+        name: 'Great',
+        percentage: 0.4,
+        score: null,
+      },
+      {
+        name: 'Amazing',
+        percentage: 0.5,
+        score: null,
+      },
+      {
+        name: 'Genius',
+        percentage: 0.7,
+        score: null,
+      },
+      {
+        name: 'Queen Bee',
+        percentage: 1,
+        score: null,
+      },
+    ];
+    this.bingoArray = [];
+    this.isBingo = false;
+    this.timestamps = {
+      start: null,
+      genius: null,
+      hints: null,
+      definitions: null,
+      queen_bee: null,
+    };
+
+    // DOM elements
     this.addWordContainer = document.getElementById('add-word-block');
     this.lettersBlockContainer = document.getElementById('letters-block');
     this.statsBlockContainer = document.getElementById('stats-block');
@@ -16,6 +90,12 @@ export class beeMain extends EventTarget {
     this.beeWordInput = document.getElementById('bee-word');
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
+    this.wordCountStatEl = null;
+    this.pointStatEl = null;
+    this.rankStatEl = null;
+    this.pangramStatEl = null;
+    this.perfectPangramStatEl = null;
+    this.bingoStatEl = null;
 
     this._init();
   }
@@ -45,10 +125,19 @@ export class beeMain extends EventTarget {
     this.hintText = target.value;
 
     if (this.hintText) {
-      this._findLetterList();
-      this._findStats();
-      this._findGrid();
-      this._findTwoLetterList();
+      const hasLetters = this._findLetterList();
+      if (!hasLetters) {
+        this._showMessage('No list of letters found', 'warn');
+      }
+
+      const hasStats = this._findStats();
+      if (hasStats) {
+        this._findGrid();
+        this._findTwoLetterList();
+
+        // note time hints are posted
+        this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
+      }
 
       target.closest('details').removeAttribute('open');
       this.addWordContainer.classList.remove('hidden');
@@ -65,23 +154,26 @@ export class beeMain extends EventTarget {
     if (letterList) {
       this.lettersArray = letterList[0].split(/\s/);
 
-      // const lettersEl = document.createElement('p');
-      // lettersEl.append( this.lettersArray.join(' ') );
-      // lettersEl.classList.add('letters_list');
-      // this.lettersBlockContainer.append( lettersEl );
-
       for (let letterIndex = 0; letterIndex < this.lettersArray.length; letterIndex++) {
         const letter = this.lettersArray[letterIndex].toLowerCase();
         this.lettersArray[letterIndex] = letter;
         const letterButton = document.createElement('button');
         letterButton.append( letter );
         letterButton.classList.add('letter_button', 'button');
+        if (letterIndex === 0) {
+          letterButton.classList.add('center_letter');
+        }
         letterButton.addEventListener('click', this._addLetter.bind(this) );
         this.lettersBlockContainer.append( letterButton );
       }
+
+      this.timestamps.start =  Date.now(); // start, genius, hints, definitions, queen_bee
+
+      return true;
+    } else {
+      return false;
     }
   }
-
 
   /**
    * Finds and outputs the word statistics.
@@ -91,14 +183,158 @@ export class beeMain extends EventTarget {
   _findStats() {
     const statsList = this.hintText.match(/WORDS: .+/);
     if (statsList) {
-      const statsArray = statsList[0].split(/\s\[A-Z]/);
+      // const statsArray = statsList[0].split(/\s\[A-Z]/);
+      this.statsArray = statsList[0].split(',');
+
+      this._showWordCount();
+      this._showRankings();
+      this._showPangrams();
+      this._showBingo();
+
+      // stats block found
+      return true;
+    } else {
+      // no stats block found
+      return false;
+    }
+  }
+
+  /**
+   * Calculates the word count total possible score.
+   * @private
+   * @memberOf beeMain
+   */
+  _showWordCount() {
+    const totalWordsArray = this.statsArray[0].split(':');
+    this.totalWords = parseInt(totalWordsArray[1]);
+    this._createStatCard( 'words', 
+      [
+        {
+          title: 'word-count',
+          value: this.totalWords,
+        },
+      ]
+    );
+    this.wordCountStatEl = document.getElementById('word-count-current');
+  }
+
+  /**
+   * Calculates the score rankings based on the total possible score.
+   * @private
+   * @memberOf beeMain
+   */
+  _showRankings() {
+    const scoreArray = this.statsArray[1].split(':');
+    this.totalPoints = parseInt(scoreArray[1]);
+    this.rankings.forEach(( rank ) => {
+      rank.score = Math.round(this.totalPoints * rank.percentage); 
+    });
+
+    // show output
+    this._createStatCard( 'points', 
+      [
+        {
+          title: 'points',
+          value: this.totalPoints,
+        },
+        {
+          title: 'rank',
+          value: this.rankings[0].name,
+        },
+      ]
+    );
+
+    this.pointStatEl = document.getElementById('points-current');
+
+    // remove unnecessary points from ranking
+    this.rankStatEl = document.getElementById('rank-stat');
+    this.rankStatEl.replaceChildren( this.rankings[0].name );
+  }
+
+  /**
+   * Calculates the pangrams based on the total possible score.
+   * @private
+   * @memberOf beeMain
+   */
+  _showPangrams() {
+    const pangramArray = this.statsArray[2].split('(');
+    this.pangrams = parseInt(pangramArray[0].split(':')[1]);
+    this.perfectPangrams = pangramArray[1] ? parseInt(pangramArray[1].split(' ')[0]) : 0;
+    const valuesArray = [
+      {
+        title: 'pangrams',
+        value: this.pangrams,
+      },
+    ];
+    if (this.perfectPangrams) {
+      valuesArray.push({
+        title: 'perfect',
+        value: this.perfectPangrams,
+      });
+    }
+    this._createStatCard( 'pangrams', valuesArray );
+
+    this.pangramStatEl = document.getElementById('pangrams-current');
+    this.perfectPangramStatEl = document.getElementById('perfect-current');
+
+    const perfectPangramTotalEl = document.getElementById('perfect-total');
+    if (perfectPangramTotalEl) {
+      perfectPangramTotalEl.append( ' perfect' );
+    }
+  }
+
+  /**
+   * Creates a bingo card, if there is a bingo.
+   * @private
+   * @memberOf beeMain
+   */
+   _showBingo() {
+    const bingo = this.statsArray[3];
+    if (this.statsArray[3]) {
+      this._createStatCard( 'bingo', [
+        {
+          title: 'bingo',
+          value: null,
+        },
+      ]);
+      this.bingoStatEl = document.getElementById('bingo-stat');
+      this.bingoStatEl.replaceChildren('?');
+    }
+  }
+
+  /**
+   * Create and insert a stat card.
+   * @private
+   * @memberOf beeMain
+   */
+  _createStatCard( title, valuesArray ) {
+    const statsCard = document.createElement('div');
+    statsCard.classList.add('stat_card');
+
+    const statsTitle = document.createElement('p');
+    statsTitle.classList.add('stats_title');
+    statsTitle.append( title );
+    statsCard.append( statsTitle );
+
+    // this.statsBlockContainer
+    for (const value of valuesArray) {
+      const statValue = document.createElement('p');
+      statValue.id = `${value.title}-stat`;
+      statValue.classList.add('stat_value');
+
+      const currentValue = document.createElement('span');
+      currentValue.id = `${value.title}-current`;
+      currentValue.append( '0' );
+
+      const totalValue = document.createElement('span');
+      totalValue.id = `${value.title}-total`;
+      totalValue.append( value.value );
+
+      statValue.append( currentValue, ' / ', totalValue );
+      statsCard.append( statValue );
     }
 
-    const statsEl = document.createElement('p');
-    // statsEl.append( statsArray.join('. ') );
-    statsEl.append( statsList );
-    statsEl.classList.add('stats_list');
-    this.statsBlockContainer.append( statsEl );
+    this.statsBlockContainer.append( statsCard );
   }
 
 
@@ -126,7 +362,8 @@ export class beeMain extends EventTarget {
    * @return {Array} An array of header word counts.
    */
   _findGridHeader() {
-    const gridHeaderList = this.hintText.match(/(\d[\s+\t+].+Σ)/);
+    // const gridHeaderList = this.hintText.match(/(\n\d[\s+\t+].+Σ)/);
+    const gridHeaderList = this.hintText.match(/(\d[^\S+\r+\n+].+Σ)/);
     if (gridHeaderList) {
       const gridHeaderArray = this._whitespacedStringToArray( gridHeaderList[0] );
       this.letterCountArray = gridHeaderArray.slice(0, -1).map( (str) => parseInt(str, 10) );
@@ -203,7 +440,9 @@ export class beeMain extends EventTarget {
     if (twoLetterArray) {
       twoLetterArray = twoLetterArray.map((str) => str.toUpperCase() );
       this._createTwoLetterList( twoLetterArray );
-    }    
+    }  else {
+      this._showMessage('No list of two letters found', 'warn');
+    }
   }
 
   /**
@@ -231,7 +470,8 @@ export class beeMain extends EventTarget {
 
       const letterHead = row[0].toUpperCase();
       const rowEl = container.insertRow();
-      for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+      let columnLength = row.length;
+      for (let columnIndex = 0; columnIndex < columnLength; columnIndex++) {
         const column = row[columnIndex];
         const wordCount = gridTableArray[0][columnIndex].trim();
 
@@ -244,7 +484,13 @@ export class beeMain extends EventTarget {
           cellId = `Σ-${wordCount}`;
         } else {
           if (typeof column === 'number') {
-            cellContent = this._createNumberInput( column, `${letterHead}-${wordCount}` );
+            const id = `${letterHead}-${wordCount}`;
+            if (columnIndex === columnLength - 1) {
+              cellContent = column;
+              cellId = id;
+            } else {
+              cellContent = this._createNumberInput( column, id );
+            }
           } else {
             cellContent = '';
           }
@@ -309,90 +555,117 @@ export class beeMain extends EventTarget {
    */
   _addWord( event ) {
     const target = event.target;
-    const wordList = target.value.trim();
+    const addWordList = target.value.trim();
 
     // clear the input
     target.value = '';
 
-    if (wordList) {
-      const wordArray = wordList.split(/\W+/);
+    if (addWordList) {
+      const wordArray = addWordList.split(/\W+/);
       for (let eachWord of wordArray) {
         eachWord = eachWord.toLowerCase();
 
-        // find length of word
-        const wordLength = eachWord.length;
-
-        // see if the word has already been entered
-        const prefoundWord = document.getElementById( `word-${eachWord}` );
-        if (!this.letterCountArray.includes(wordLength)) {
+        if (!eachWord.includes(this.lettersArray[0])) {
           this.beeWordInput.classList.add('reject');
-          console.warn('Wrong number of letters');
-        } else if (prefoundWord) {
-          this.beeWordInput.classList.add('reject');
-          console.warn('Word already found');
-        } else{    
-          // find first letter
-          const firstLetter = eachWord.substring(0, 1).toUpperCase();
-
-          // find matching two-letter category
-          const twoLetters = eachWord.substring(0, 2).toUpperCase();
-
-          const twoLetterTerm = document.getElementById( twoLetters );
-
-          // make sure all letters in word are in letters list
-          const isCorrectLetters = eachWord.split('').every((letter) => this.lettersArray.includes(letter));
-
-          if (!twoLetterTerm) {
+          this._showMessage('Missing central letter');
+        } else {
+          // find length of word
+          const wordLength = eachWord.length;
+  
+          // see if the word has already been entered
+          const prefoundWord = document.getElementById( `word-${eachWord}` );
+          if (!this.letterCountArray.includes(wordLength)) {
             this.beeWordInput.classList.add('reject');
-            console.warn('Doesn\'t match starting letters');
-          } else if (!isCorrectLetters) {
+            this._showMessage('Wrong number of letters');
+          } else if (prefoundWord) {
             this.beeWordInput.classList.add('reject');
-            console.warn('Doesn\'t match letters');
-          } else {
-            // word seems to be a valid entry, modulo inclusion in the game dictionary,
-            //  so insert it into the two-letter list
-            this.beeWordInput.classList.add('accept');
+            this._showMessage('Word already found');
+          } else{    
+            // find first letter
+            const firstLetter = eachWord.substring(0, 1).toUpperCase();
+  
+            // find matching two-letter category
+            const twoLetters = eachWord.substring(0, 2).toUpperCase();
+  
+            const twoLetterTerm = document.getElementById( twoLetters );
+  
+            // make sure all letters in word are in letters list
+            const isCorrectLetters = eachWord.split('').every((letter) => this.lettersArray.includes(letter));
+  
+            if (!twoLetterTerm) {
+              this.beeWordInput.classList.add('reject');
+              this._showMessage('Doesn\'t match starting letters');
+            } else if (!isCorrectLetters) {
+              this.beeWordInput.classList.add('reject');
+              this._showMessage('Doesn\'t match letters');
+            } else {
+              // word seems to be a valid entry, modulo inclusion in the game dictionary,
+              //  so insert it into the two-letter list
+              this.beeWordInput.classList.add('accept');
+  
+              // add word to master word list
+              this.wordList.push({
+                word: eachWord,
+                timestamp: Date.now(),
+              });
 
-            // add word to master word list
-            this.wordList.push(eachWord);
+              console.log('this.wordList', this.wordList);
 
-            const defEl = document.createElement('dd');
-            defEl.classList.add(twoLetters);
-            defEl.id = `word-${eachWord}`;
+              this.wordsFound = this.wordList.length;
+              this._updateWordCount();
 
-            const removeButton = document.createElement('button');
-            removeButton.type = 'remove';
-            removeButton.setAttribute('aria-label', `Remove ${eachWord} from list`);
-            removeButton.append( '×' );
-            removeButton.addEventListener('click', this._removeWord.bind(this) );
-            
 
-            const wordEl = document.createElement('a');
-            wordEl.href = `https://www.wordnik.com/words/${eachWord}`;
-            wordEl.target= '_blank';
-            wordEl.append( eachWord );
+              const isPangram = this._checkPangram( eachWord );
+              this._checkBingo( firstLetter );
 
-            const wordLengthEl = document.createElement('span');
-            wordLengthEl.append( `(${wordLength})` );
+              const defEl = document.createElement('dd');
+              defEl.classList.add(twoLetters);
+              defEl.id = `word-${eachWord}`;
+  
+              const removeButton = document.createElement('button');
+              removeButton.type = 'remove';
+              removeButton.setAttribute('aria-label', `Remove ${eachWord} from list`);
+              removeButton.append( '×' );
+              removeButton.addEventListener('click', this._removeWord.bind(this) );
+              
+  
+              const wordEl = document.createElement('a');
+              wordEl.href = `https://www.wordnik.com/words/${eachWord}`;
+              wordEl.target= '_blank';
+              wordEl.append( eachWord );
 
-            defEl.append( removeButton, wordEl, ' ', wordLengthEl );
-
-            twoLetterTerm.after( defEl );
-
-            // sort words alphabetically
-            const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${twoLetters}`));
-            siblingWords.sort( (a, b) => {
-              if (a.id < b.id) {
-                return -1;
-              } else if (a.id > b.id) {
-                return 1;
+              if (isPangram) {
+                wordEl.classList.add('pangram-word');
               }
-              return 0;
-            });
-            twoLetterTerm.after( ...siblingWords );
 
-            // update two-letter term and grid numbers
-            this._updateCountByWord( eachWord );
+              const wordLengthEl = document.createElement('span');
+              wordLengthEl.append( `(${wordLength})` );
+  
+              defEl.append( removeButton, wordEl, ' ', wordLengthEl );
+  
+              twoLetterTerm.after( defEl );
+  
+              // sort words alphabetically
+              const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${twoLetters}`));
+              siblingWords.sort( (a, b) => {
+                if (a.id < b.id) {
+                  return -1;
+                } else if (a.id > b.id) {
+                  return 1;
+                }
+                return 0;
+              });
+              twoLetterTerm.after( ...siblingWords );
+  
+              // update two-letter term and grid numbers
+              this._updateCountByWord( eachWord );
+
+              // update score
+              this._updateScore(wordLength);
+              if (isPangram) {
+                this._updateScore(7);
+              }
+            }
           }
         }
       }
@@ -448,10 +721,12 @@ export class beeMain extends EventTarget {
     }
 
     // decrement or increment the word-grid letter total count
-    let gridTotalCountEl = document.getElementById(`${firstLetter}-Σ`);
-    if (gridTotalCountEl) {
-      this._setNumberInputValue( gridTotalCountEl, (+gridTotalCountEl.value + modifier) );
-    }
+    let gridRowTotalCountEl = document.getElementById(`${firstLetter}-Σ`);
+    // if (gridRowTotalCountEl) {
+    //   this._setNumberInputValue( gridRowTotalCountEl, (+gridRowTotalCountEl.value + modifier) );
+    // }
+    gridRowTotalCountEl.replaceChildren( (+gridRowTotalCountEl.textContent + modifier) );
+
 
     // decrement or increment the word-grid word-length total count
     let gridWordLengthTotalEl = document.getElementById(`Σ-${wordLength}`);
@@ -459,7 +734,13 @@ export class beeMain extends EventTarget {
 
     // decrement or increment the word-grid total word count
     let gridWordTotalEl = document.getElementById(`Σ-Σ`);
-    gridWordTotalEl.replaceChildren( (+gridWordTotalEl.textContent + modifier) );
+    const totalWordsLeft = +gridWordTotalEl.textContent + modifier;
+    gridWordTotalEl.replaceChildren( totalWordsLeft );
+
+    if (totalWordsLeft === 0) {
+      // note time queen bee is reached
+      this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
+    }
   }
 
   /**
@@ -474,6 +755,105 @@ export class beeMain extends EventTarget {
     target.value = value;
     target.setAttribute('value', value);
     return target;
+  }
+
+  /**
+   * Checks if word is a pangram.
+   * @param {string} value The word to be checked.
+   * @private
+   * @memberOf beeMain
+   * @return {Boolean} Whether the word is a pangram; true if yes, false if no.
+   */
+  _checkPangram( word, isIncrement = true ) {
+    const modifier = isIncrement ? 1 : -1;
+    // make sure all letters in word are in letters list
+    const isPangram = this.lettersArray.every((letter) => word.includes(letter));
+    if (isPangram) { 
+      this.pangramsFound += modifier;
+      if (word.length === 7) { 
+        this.perfectPangramsFound += modifier;
+      }
+    }
+
+    // update pangram display
+    this.pangramStatEl.replaceChildren(this.pangramsFound);
+    if (this.perfectPangramStatEl) {
+      this.perfectPangramStatEl.replaceChildren(this.perfectPangramsFound);
+    }
+
+    return isPangram;
+  }
+
+  /**
+   * Checks if bingo has been reached.
+   * @param {string} value The word to be checked.
+   * @private
+   * @memberOf beeMain
+   * @return {Boolean} Whether the word is a pangram; true if yes, false if no.
+   */
+  _checkBingo( firstLetter ) {
+    // , isRemove = false
+    if (!this.bingoArray.includes(firstLetter)) {
+      this.bingoArray.push(firstLetter);
+      if (this.bingoArray.length === 7) {
+        this.isBingo = true;
+      }
+    }
+
+    if (this.isBingo) {
+      this.bingoStatEl.replaceChildren('!');
+    }
+  }
+
+  /**
+   * Updates the score.
+   * @param {Number} letterCount The value for the score.
+   * @param {Boolean} isIncrement Whether the value should be incremented or decremented; default is true.
+   * @private
+   * @memberOf beeMain
+   * @return {Element} The number input element.
+   */
+  _updateScore( letterCount, isIncrement = true ) {
+    const modifier = isIncrement ? 1 : -1;
+    if (letterCount === 4) {
+      this.pointScore += modifier;
+    } else {
+      this.pointScore += (letterCount * modifier);
+    }
+
+    // update score display
+    this.pointStatEl.replaceChildren(this.pointScore);
+
+    // find ranking
+    let rank = null;
+    for (const ranking of this.rankings) {
+      if (this.pointScore >= ranking.score) {
+        rank = ranking.name;
+      } else {
+        break;
+      }
+    }
+
+    this.rank = rank;
+    this.rankStatEl.replaceChildren( this.rank );
+  }
+
+  /**
+   * Updates the word count.
+   * @param {string} value The value for the input element.
+   * @param {string} id The id for the input element.
+   * @private
+   * @memberOf beeMain
+   * @return {Element} The number input element.
+   */
+  _updateWordCount( isIncrement = true ) {
+    const modifier = isIncrement ? 1 : -1;
+    // if (letterCount === 4) {
+    //   this.pointScore += modifier;
+    // } else {
+    //   this.pointScore += (letterCount * modifier);
+    // }
+    this.wordCountStatEl.replaceChildren( this.wordsFound );
   }
 
   // /**
@@ -499,6 +879,11 @@ export class beeMain extends EventTarget {
     const word = target.parentNode.id.replace('word-', '');
     // update two-letter term and grid numbers
     this._updateCountByWord( word, false );
+    this._updateScore( word.length, false );
+    const isPangram = this._checkPangram( word, false );
+    if (isPangram) {
+      this._updateScore(7, false);
+    }
     target.parentNode.remove();
   }
 
@@ -522,6 +907,17 @@ export class beeMain extends EventTarget {
    */
   _backspace() {
     this.beeWordInput.value = this.beeWordInput.value.slice(0, -1);
+  }
+
+  /**
+   * Posts a message to the user.
+   * @param {string} message The message to be posted.
+   * @param {string} codeType The type of message.
+   * @private
+   * @memberOf beeMain
+   */
+  _showMessage( message, codeType) {
+    console.warn(message, codeType);
   }
 
 }

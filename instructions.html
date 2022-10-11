@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Worker Bee</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>">
+  <script type="module" src="./beeMain.js"></script>
+  <link rel="stylesheet" href="./style.css">
+  
+</head>
+<body>
+  <header>
+    <h1>How to use Worker Bee <span class="bee">🐝</span></h1>
+  </header>
+  <main>
+    <p>Worker Bee is not a game itself, but a tool to help track your progress in the <a href="https://www.nytimes.com/puzzles/spelling-bee">NYT Spelling Bee</a>. We have no affiliation with NYT, and we're doing our best not to step on their toes. This is just a fun app to help players. I mostly wrote it for myself, my wife, and our circle of word-nerd friends who play Spelling Bee and other word games.</p>
+
+    <p>This app doesn't include any word list or answers. We trust you to enter your words in correctly, and only words acceppted by the Bee. There are a few basic checks to help you avoid typos, like ensuring that you only use words with the right number of letters, that the word only uses the letters in the day's puzzle, and that the word includes the center letter. But it doesn't know if the word is part of the Spelling Bee.</p>
+
+    <h2>Getting started</h2>
+    <p>Copy the whole hints block from the NYT Spelling Bee hints page. Paste it into the text area on the app page, like the one below. (You might need to hit <kbd class="button">return</kbd> or <kbd class="button">enter</kbd> on your keyboard for it to start parsing the hints, or it might happen right when you paste it.</p>
+
+    <p>The minimum information you can copy and paste starts with the word list, and includes the grid and all of the two-letter list. The example below (from the October 6, 2022 NYT Spelling Bee) shows the minimum information you must copy from the hints page. You can copy the example below and paste it in the app, to see it is supposed to look when done correctly.</p>
+
+    <textarea>
+m a l n o p r
+
+WORDS: 51, POINTS: 196, PANGRAMS: 1
+  4 	5 	6 	7 	8 	10 	Σ
+a: 	1 	3 	1 	- 	- 	- 	5
+l: 	4 	1 	- 	1 	- 	- 	6
+m: 	9 	8 	3 	- 	1 	- 	21
+n: 	1 	- 	2 	- 	- 	- 	3
+p: 	4 	2 	2 	1 	2 	1 	12
+r: 	4 	- 	- 	- 	- 	- 	4
+Σ: 	23 	14 	8 	2 	3 	1 	51
+
+Two letter list:
+
+al-1 am-2 ar-2
+la-3 ll-1 lo-2
+ma-10 mo-11
+na-1 no-2
+pa-5 po-4 pr-3
+ra-1 ro-3 
+    </textarea>
+
+
+  <h2>Adding found words</h2>
+  <p>You can type or paste a word in the text input field, and hit enter, or you can use our onscreen keyboard to type it and hit the <kbd class="button">enter</kbd> button.</p> 
+
+  <p>If the word doesn't match basic rules, or there's some other problem, the input will flash green. The word will be added to the list of words under its two-letter heading, and all the appropriate counts will be updated.</p>
+
+  <p>If the word doesn't match basic rules, or there's some other problem, the input will flash red.</p>
+  
+  <p>You can even paste multiple words, separated by whitespace, commas, or any other non-word character, and it will enter them all in at once.</p>
+
+  <p>(On the NYT website, you can copy both the hints and your word list, and you can paste that whole word list in the found-words input field; on the NYT word mobile app, you can only copy the hints, not the word list, so it's not quite as easy, but you can still enter words one at a time.)</p>
+
+
+  <h2>Removing mistakes</h2>
+  <p>If you add a word that's misspelled or incorrect, you can click the <kbd>remove</kbd> (<kbd>×</kbd>) button to the left of the word, and the word will be removed, and the tallies updated.</p>
+
+  <h2>Accessibility</h2>
+  <p>I take accessibility for people with disabilities very seriously, and I've tried to make this app accessible. (I have no idea if Spelling Bee is accessible.) If there's some way I can improve the accessibility, please let me know, and I'll prioritize that.</p>
+
+  <h2>Privacy and Security</h2>
+  <p>This app works completely in your browser. It doesn't collect any information from you, at all. It doesn't use cookies, storage, or anything like that. It doesn't register your IP address, track your mouse or keyboard, or do anything fancy. It doesn't send any information back to the server or forward it anywhere; even if it did (which it doesn't), since it doesn't collect information, there would be nothing to send!</p>
+
+  <p>Because of that, it doesn't keep track of your history statistics, and you can't move from one device to another with the app. If you want to do that, you'll have to start again on the new device.</p>
+
+  <p>Also, if you refresh the browser tab or navigate away or something, it won't save the state. You'll have to start over. But that's usually not very hard.</p>
+  
+  <p><b>Caveat:</b> In the future, I may add some of these features. If I do, I will need to use some sort of storage and server communication, but I will do the bare minimum and never use your personal information. To be frank, I'm just not that into you; I'm sure you're a great person and all, but I've got other things on my mind.</p>
+
+  <footer>
+    <a href="./index.html" class="button">back</a>
+    <a href="https://github.com/shepazu/worker-bee/issues" class="button">feedback</a>
+    <a href="https://www.wordnik.com/words/jackal" class="button">corrections</a>
+  </footer>
+</body>
+</html>

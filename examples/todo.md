@@ -5,3 +5,4 @@
 - add find missing words: two-letters, and where known, letter count
 - enable removing words
 - make letters into onscreen keyboard
+- congrats when reach bingo!, pangrams, etc.
