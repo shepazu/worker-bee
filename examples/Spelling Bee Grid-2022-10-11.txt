@@ -1,0 +1,86 @@
+ Center letter is in bold.
+
+o a f l m r u
+
+WORDS: 49, POINTS: 179, PANGRAMS: 1 (1 Perfect)
+	4 	5 	6 	7 	8 	Σ
+a: 	2 	5 	2 	1 	- 	10
+f: 	8 	6 	2 	2 	1 	19
+l: 	4 	1 	- 	- 	- 	5
+m: 	2 	4 	- 	- 	- 	6
+o: 	1 	1 	- 	- 	- 	2
+r: 	5 	1 	- 	1 	- 	7
+Σ: 	22 	18 	4 	4 	1 	49
+
+Two letter list:
+
+af-2 al-1 am-3 ar-2 au-2
+fa-2 fl-4 fo-10 fr-2 fu-1
+lo-5
+mo-6
+of-1 or-1
+ro-6 ru-1 
+
+--------
+
+Beginner (0)
+Good Start (4)
+Moving Up (9)
+Good (14)
+Solid (27)
+Nice (45)
+Great (72)
+Amazing (90)
+Genius (125)
+
+-----
+
+afoul
+afro
+aloof
+ammo
+amoral
+amour
+armor
+aroma
+aurora
+auroral
+falloff
+farro
+floor
+flora
+floral
+flour
+foal
+foam
+fool
+fora
+form
+formal
+formula
+forum
+foul
+four
+from
+froufrou
+furor
+loaf
+loam
+loll
+loofa
+loom
+molar
+moll
+momma
+moola
+moor
+moral
+offal
+oral
+roam
+roar
+roll
+roof
+room
+roomful
+rumor
