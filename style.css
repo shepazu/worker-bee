@@ -331,31 +331,11 @@ footer {
   margin-top: 3rem;
 }
 
-footer a.button {
+footer a.button,
+footer .button {
   padding: 7px 12.5px;
 }
 
-
-
-/* laptop / desktop */
-@media screen and (min-width: 800px) {
-
-  h1 {
-    font-size: 5rem;
-  }
-
-  .bee {
-    display: inline;
-    font-size: 4rem; 
-  }
-
-  #two-letter-lists dl,
-  #discovery-order-list ol {
-    column-count: 4;
-    column-gap: 4rem;
-  }
-
-}
 
 /* feedback animations */
 
@@ -400,7 +380,7 @@ footer a.button {
 /* word list tabs */
 .tabs {
   position: relative;
-  min-height: 18rem;
+  min-height: 30rem;
   /* Fix to use flexbox? */
   clear: both;
   margin: 1rem 0;
@@ -451,7 +431,56 @@ footer a.button {
   /* transform: translateX(0); */
 }
 
+.dim {
+  opacity: 0.5;
+}
 
 .hidden {
   display: none;
 }
+
+
+/* Extra small devices (phones, 600px and down) */
+/* @media only screen and (max-width: 600px) { } */
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+/* @media only screen and (min-width: 600px) { } */
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  #two-letter-lists dl,
+  #discovery-order-list ol {
+    column-count: 3;
+    column-gap: 3rem;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  h1 {
+    font-size: 5rem;
+  }
+
+  .bee {
+    display: inline;
+    font-size: 4rem; 
+  }
+
+  #two-letter-lists dl,
+  #discovery-order-list ol {
+    column-count: 4;
+    column-gap: 4rem;
+  }
+
+  button[type=remove] {
+    opacity: 0;
+  }
+
+  button[type=remove]:hover {
+    opacity: 1;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+/* @media only screen and (min-width: 1200px) { }  */
+

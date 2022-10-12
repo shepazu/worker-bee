@@ -164,8 +164,8 @@ export class beeMain extends EventTarget {
             this._displayDiscoveryOrderListWord( word, 'className', entry.isPangram );
 
             // find matching two-letter category
-            const twoLetters = word.substring(0, 2).toUpperCase();
-            this._displayTwoLetterListWord( word, twoLetters, entry.isPangram );
+            const twoLetterCode = word.substring(0, 2).toUpperCase();
+            this._displayTwoLetterListWord( word, twoLetterCode, entry.isPangram );
           });
 
         }
@@ -263,6 +263,7 @@ export class beeMain extends EventTarget {
     this.rankings.forEach(( rank ) => {
       rank.score = Math.round(this.totalPoints * rank.percentage); 
     });
+    console.log('this.rankings', this.rankings);
 
     // show output
     this._createStatCard( 'points', 
@@ -280,9 +281,7 @@ export class beeMain extends EventTarget {
       ]
     );
 
-    if (this.pointStatEl) {
-      this.pointStatEl = document.getElementById('points-current');
-    }
+    this.pointStatEl = document.getElementById('points-current');
 
     // remove unnecessary points from ranking
     this.rankStatEl = document.getElementById('rank-stat');
@@ -572,14 +571,15 @@ export class beeMain extends EventTarget {
 
     for (const twoLetterCount of twoLetterArray) {
       const twoLetterCodeArray = twoLetterCount.split('-');
-      const twoLetters = twoLetterCodeArray[0];
+      const twoLetterCode = twoLetterCodeArray[0];
       const count = parseInt(twoLetterCodeArray[1]);
 
       const twoLetterTermEl = document.createElement('dt');
-      twoLetterTermEl.id = twoLetters;
+      twoLetterTermEl.classList.add(twoLetterCode);
+      twoLetterTermEl.id = twoLetterCode;
 
       const twoLetterItem = document.createElement('span');
-      twoLetterItem.append( twoLetters );
+      twoLetterItem.append( twoLetterCode );
       twoLetterItem.classList.add('two_letter_code');
       twoLetterTermEl.append( twoLetterItem );
 
@@ -637,9 +637,9 @@ export class beeMain extends EventTarget {
             const firstLetter = eachWord.substring(0, 1).toUpperCase();
   
             // find matching two-letter category
-            const twoLetters = eachWord.substring(0, 2).toUpperCase();
+            const twoLetterCode = eachWord.substring(0, 2).toUpperCase();
   
-            const twoLetterTerm = document.getElementById( twoLetters );
+            const twoLetterTerm = document.getElementById( twoLetterCode );
   
             // make sure all letters in word are in letters list
             const isCorrectLetters = eachWord.split('').every((letter) => this.lettersArray.includes(letter));
@@ -674,9 +674,9 @@ export class beeMain extends EventTarget {
               // // add word to discovery-order list
               this._displayDiscoveryOrderListWord( eachWord, 'className', isPangram );
 
-              // add word to appropriate two-letter list        
+              // add word to appropriate two-letter list
               if (twoLetterTerm) {
-                this._displayTwoLetterListWord( eachWord, twoLetters, isPangram );
+                this._displayTwoLetterListWord( eachWord, twoLetterCode, isPangram );
               }
 
               // update score
@@ -818,19 +818,27 @@ export class beeMain extends EventTarget {
     // find first letter
     const firstLetter = word.substring(0, 1).toUpperCase();
     // find matching two-letter category
-    const twoLetters = word.substring(0, 2).toUpperCase();
+    const twoLetterCode = word.substring(0, 2).toUpperCase();
     const wordLength = word.length;
-    const twoLetterTerm = document.getElementById( twoLetters );
+    const twoLetterTerm = document.getElementById( twoLetterCode );
 
 
     // decrement or increment the two-letter count
     let countEl = twoLetterTerm.querySelector('input[type=number]');
-    this._setNumberInputValue( countEl, (+countEl.value + modifier) );
+    const countValue = +countEl.value + modifier;
+    this._setNumberInputValue( countEl, countValue );
+    if (countValue === 0) {
+      this._toggleTwoLetterGroup( twoLetterCode );
+    } else if (countValue === 1 && !isDecrement) {
+      this._toggleTwoLetterGroup( twoLetterCode, false );
+    }
 
     // decrement or increment the word-grid count
     let gridCountEl = document.getElementById(`${firstLetter}-${wordLength}`);
     if (gridCountEl) {
-      this._setNumberInputValue( gridCountEl, (+gridCountEl.value + modifier) );
+      const gridCountValue = +gridCountEl.value + modifier;
+      const isDim = (gridCountValue === 0) ? true: false;
+      this._setNumberInputValue( gridCountEl, gridCountValue, isDim );
     }
 
     // decrement or increment the word-grid letter total count
@@ -860,19 +868,45 @@ export class beeMain extends EventTarget {
    * Sets the value of a number input element.
    * @param {Element} target The input element to be set.
    * @param {string} value The value for the input element.
+   * @param {Boolean} isDim Whether the value should be dimmed; default is false.
    * @private
    * @memberOf beeMain
    * @return {Element} The number input element.
    */
-  _setNumberInputValue( target, value ) {
+  _setNumberInputValue( target, value, isDim = false ) {
     target.value = value;
     target.setAttribute('value', value);
+    if (isDim) {
+      target.classList.add('dim');
+    } else {
+      target.classList.remove('dim');
+    }
     return target;
+  }
+
+  /**
+   * Toggle the opacity of a group of two-letter elements.
+   * @param {string} twoLetterCode The class code for two-letter elements to be set.
+   * @param {Boolean} isDim Whether the value should be dimmed; default is true.
+   * @private
+   * @memberOf beeMain
+   */
+  _toggleTwoLetterGroup( twoLetterCode, isDim = true ) {
+    // const className = isDim ? ''
+    const twoLetterEls = Array.from(this.twoLetterListContainer.querySelectorAll(`.${twoLetterCode}`));
+    twoLetterEls.forEach( (el) => {
+      if (isDim) {
+        el.classList.add('dim');
+      } else {
+        el.classList.remove('dim');
+      }
+    });
   }
 
   /**
    * Checks if word is a pangram.
    * @param {string} value The word to be checked.
+   * @param {Boolean} isIncrement Whether the value should be incremented or decremented; default is true.
    * @private
    * @memberOf beeMain
    * @return {Boolean} Whether the word is a pangram; true if yes, false if no.
