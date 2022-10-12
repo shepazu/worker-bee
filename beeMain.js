@@ -1131,12 +1131,11 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   async _shareStatus() {
-    // console.log(navigator);
     try {
+      const rank = (this.rank === 'Queen Bee') ? '👑🐝! Show me the honey' : this.rank;
       const shareData = {
         title: 'Worker Bee',
-        text: `Spelling Bee rank: ${this.rank}!`,
-        url: 'https://www.nytimes.com/puzzles/spelling-bee'
+        text: `Spelling Bee rank: ${rank}!`,
       }
 
       await navigator.share(shareData);
@@ -1145,25 +1144,4 @@ export class beeMain extends EventTarget {
       console.error(`Error: ${err}`);
     }
   }
-
-  // const shareData = {
-  //   title: 'MDN',
-  //   text: 'Learn web development on MDN!',
-  //   url: 'https://developer.mozilla.org'
-  // }
-  
-  // const btn = document.querySelector('button');
-  // const resultPara = document.querySelector('.result');
-  
-  // // Share must be triggered by "user activation"
-  // btn.addEventListener('click', async () => {
-  //   try {
-  //     await navigator.share(shareData);
-  //     resultPara.textContent = 'MDN shared successfully';
-  //   } catch (err) {
-  //     resultPara.textContent = `Error: ${err}`;
-  //   }
-  // });
-  
-
 }
