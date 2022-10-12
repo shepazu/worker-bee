@@ -91,7 +91,8 @@ export class beeMain extends EventTarget {
     this.beeWordInput = document.getElementById('bee-word');
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
-
+    this.shareButton = document.getElementById('share_button');
+    
     this.listTabsContainer = document.getElementById('list-tabs');
     this.twoLetterListsTab = document.getElementById('two-letter-lists-tab');
     this.twoLetterListContainer = document.getElementById('two-letter-lists');
@@ -121,6 +122,8 @@ export class beeMain extends EventTarget {
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
     this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
+  
+    this.shareButton.addEventListener('click', this._shareStatus.bind(this));
   }
 
   /**
@@ -1121,5 +1124,46 @@ export class beeMain extends EventTarget {
   _showMessage( message, codeType) {
     console.warn(message, codeType);
   }
+
+  /**
+   * Posts a message to the user.
+   * @private
+   * @memberOf beeMain
+   */
+  async _shareStatus() {
+    // console.log(navigator);
+    try {
+      const shareData = {
+        title: 'Worker Bee',
+        text: `Spelling Bee rank: ${this.rank}!`,
+        url: 'https://www.nytimes.com/puzzles/spelling-bee'
+      }
+
+      await navigator.share(shareData);
+      console.log('Status shared successfully');
+    } catch (err) {
+      console.error(`Error: ${err}`);
+    }
+  }
+
+  // const shareData = {
+  //   title: 'MDN',
+  //   text: 'Learn web development on MDN!',
+  //   url: 'https://developer.mozilla.org'
+  // }
+  
+  // const btn = document.querySelector('button');
+  // const resultPara = document.querySelector('.result');
+  
+  // // Share must be triggered by "user activation"
+  // btn.addEventListener('click', async () => {
+  //   try {
+  //     await navigator.share(shareData);
+  //     resultPara.textContent = 'MDN shared successfully';
+  //   } catch (err) {
+  //     resultPara.textContent = `Error: ${err}`;
+  //   }
+  // });
+  
 
 }
