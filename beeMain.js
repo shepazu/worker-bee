@@ -6,6 +6,7 @@ export class beeMain extends EventTarget {
 
     this.hintText = null;
     this.lettersArray = null;
+    this.priorLettersArray = null;
     this.statsArray = null;
     this.letterCountArray = null;
     this.wordList = [];
@@ -92,6 +93,13 @@ export class beeMain extends EventTarget {
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
     this.shareButton = document.getElementById('share_button');
+    this.askButton = document.getElementById('ask_button');
+
+    this.milestoneDialog = document.getElementById('milestone-dialog');
+    this.dialogClose = document.getElementById('dialog-close');
+    this.dialogStatus = document.getElementById('dialog-status');
+    this.dialogTime = document.getElementById('dialog-time');
+    this.dialogShareButton = document.getElementById('dialog-share_button');
     
     this.listTabsContainer = document.getElementById('list-tabs');
     this.twoLetterListsTab = document.getElementById('two-letter-lists-tab');
@@ -124,6 +132,9 @@ export class beeMain extends EventTarget {
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
   
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
+    this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
+
+    this.dialogShareButton.addEventListener('click', this._shareStatus.bind(this));
   }
 
   /**
@@ -137,7 +148,24 @@ export class beeMain extends EventTarget {
     this.hintText = target.value;
 
     if (this.hintText) {
+
+      // TODO: find if user was previously in no-hints mode, by examinine if the letters array was the same
+      if (this.lettersArray) {
+        this.priorLettersArray = this.lettersArray.slice();
+      }
+      
+      // get current list of letters
       const hasLetters = this._findLetterList();
+
+      // compare prior and current list of letters, irrespective of order
+      let isSameLetters = false;
+      if (this.priorLettersArray) {
+        isSameLetters = this.lettersArray.length === this.priorLettersArray.length &&
+          this.lettersArray.every( (element) => this.priorLettersArray.includes(element) );
+      }      
+      console.log('isSameLetters', isSameLetters);
+ 
+
       if (!hasLetters) {
         this._showMessage('No list of letters found', 'warn');
       } else {
@@ -146,20 +174,24 @@ export class beeMain extends EventTarget {
 
         const hasStats = this._findStats();
         if (!hasStats) {
+          this.mode = 'no-hints';
           // no stats, only letters, so default to the discovered word tab
           this.discoveryOrderListTab.checked = true;
-          // console.log('discoveryOrderListTab');
-
-          this.mode = 'no-hints';
         } else {      
-          this._findGrid();
-          this._findTwoLetterList();
-
-          this.mode = 'hints';
           // note time hints are posted
           this.timestamps.hints =  Date.now(); // start, genius, hints, definitions, queen_bee
 
-          // add any existing words in word list to two-letter lists
+          // set mode to having hints
+          this.mode = 'hints';
+
+          // has letters and stats, so default to the two-letter list tab
+          this.twoLetterListsTab.checked = true;
+
+          // find and display the grid and two-letter lists
+          this._findGrid();
+          this._findTwoLetterList();
+
+          // add any existing discovered words in word list to two-letter lists
           this.wordList.forEach( (entry) => {
             const word = entry.word;
             
@@ -171,6 +203,8 @@ export class beeMain extends EventTarget {
             this._displayTwoLetterListWord( word, twoLetterCode, entry.isPangram );
           });
 
+          // now that we can calculate ranks, show rank
+          this._updateRank();
         }
 
         target.closest('details').removeAttribute('open');
@@ -219,20 +253,33 @@ export class beeMain extends EventTarget {
   _findStats() {
     const statsList = this.hintText.match(/WORDS: .+/);
     if (statsList) {
-      // const statsArray = statsList[0].split(/\s\[A-Z]/);
-      this.statsArray = statsList[0].split(',');
-
-      this._showWordCount();
-      this._showRankings();
-      this._showPangrams();
-      this._showBingo();
-
       // stats block found
+      this.statsArray = statsList[0].split(',');
+      this._showStats();
       return true;
     } else {
-      // no stats block found
+      // no stats block found, but show basic point and word counts
+      this._showStats();
       return false;
     }
+  }
+
+  /**
+   * Outputs the word statistics.
+   * @private
+   * @memberOf beeMain
+   */
+  _showStats() {
+    // remove any existing stats cards
+    this._clearStatBlock()
+
+    // get stats and create stats cards
+    this._showWordCount();
+    this._showScoreAndRank();
+    if (this.statsArray) {
+      this._showPangrams();
+      this._showBingo();
+    } 
   }
 
   /**
@@ -241,8 +288,13 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _showWordCount() {
-    const totalWordsArray = this.statsArray[0].split(':');
-    this.totalWords = parseInt(totalWordsArray[1]);
+    if (this.statsArray) {
+      // parse stats for total word count
+      const totalWordsArray = this.statsArray[0].split(':');
+      this.totalWords = parseInt(totalWordsArray[1]);
+    }
+
+    // create word status card
     this._createStatCard( 'words', 
       [
         {
@@ -253,6 +305,12 @@ export class beeMain extends EventTarget {
       ]
     );
     this.wordCountStatEl = document.getElementById('word-count-current');
+
+    if (!this.statsArray) {
+      // if no stats, then we don't have a total word count, 
+      // so replace the total word count with just the current word count
+      this.wordCountStatEl.parentNode.replaceChildren(this.wordCountStatEl);
+    }
   }
 
   /**
@@ -260,13 +318,25 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _showRankings() {
-    const scoreArray = this.statsArray[1].split(':');
-    this.totalPoints = parseInt(scoreArray[1]);
-    this.rankings.forEach(( rank ) => {
-      rank.score = Math.round(this.totalPoints * rank.percentage); 
-    });
-    console.log('this.rankings', this.rankings);
+  _showScoreAndRank() {
+    if (this.statsArray) {
+      const scoreArray = this.statsArray[1].split(':');
+      this.totalPoints = parseInt(scoreArray[1]);
+  
+      // let ranksOutput = '';
+      if (this.totalPoints) {
+        this.rankings.forEach(( rank ) => {
+          rank.score = Math.round(this.totalPoints * rank.percentage); 
+
+          // testing output
+          // ranksOutput += `${rank.name}: ${rank.score}, `;
+        });
+        // console.log('rankings', ranksOutput);
+      }
+    } 
+    // else {
+    //   this.mode = 'no-hints';
+    // }
 
     // show output
     this._createStatCard( 'points', 
@@ -285,11 +355,18 @@ export class beeMain extends EventTarget {
     );
 
     this.pointStatEl = document.getElementById('points-current');
-
-    // remove unnecessary points from ranking
     this.rankStatEl = document.getElementById('rank-stat');
-    if (this.rankStatEl) {
-      this.rankStatEl.replaceChildren( this.rankings[0].name );
+
+    if (!this.statsArray) {
+      // if no stats, then we can't determine rank, only raw points, 
+      // so remove the total points and rank entry
+      this.pointStatEl.parentNode.replaceChildren(this.pointStatEl);
+      this.rankStatEl.remove();
+    } else {
+      // remove unnecessary points from ranking
+      if (this.rankStatEl) {
+        this.rankStatEl.replaceChildren( this.rankings[0].name );
+      }
     }
   }
 
@@ -345,6 +422,15 @@ export class beeMain extends EventTarget {
       this.bingoStatEl = document.getElementById('bingo-stat');
       this.bingoStatEl.replaceChildren('?');
     }
+  }
+
+  /**
+   * REmove all stats cards from the stats block.
+   * @private
+   * @memberOf beeMain
+   */
+  _clearStatBlock() {
+    this.statsBlockContainer.replaceChildren( '' );
   }
 
   /**
@@ -960,12 +1046,12 @@ export class beeMain extends EventTarget {
   /**
    * Updates the score.
    * @param {Number} letterCount The value for the score.
+   * @param {Boolean} isPangram Whether the word is a pangram; default is false.
    * @param {Boolean} isIncrement Whether the value should be incremented or decremented; default is true.
    * @private
    * @memberOf beeMain
-   * @return {Element} The number input element.
    */
-  _updateScore( letterCount, isPangram, isIncrement = true ) {
+  _updateScore( letterCount, isPangram = false, isIncrement = true ) {
     const modifier = isIncrement ? 1 : -1;
 
     // point constants
@@ -988,6 +1074,15 @@ export class beeMain extends EventTarget {
       this.pointStatEl.replaceChildren(this.pointScore);
     }
 
+    this._updateRank();
+  }
+
+  /**
+   * Updates the rank and displays it.
+   * @private
+   * @memberOf beeMain
+   */
+  _updateRank() {
     // find ranking
     let rank = null;
     for (const ranking of this.rankings) {
@@ -1002,6 +1097,54 @@ export class beeMain extends EventTarget {
     if (this.rankStatEl) {
       this.rankStatEl.replaceChildren( this.rank );
     }
+  
+    if (this.rank === 'Genius') {
+      this.timestamps.genius =  Date.now(); // start, genius, hints, definitions, queen_bee
+      // this._displayMilestone(); 
+    } else if (this.rank === 'Queen Bee') {
+      this.timestamps.queen_bee =  Date.now(); // start, genius, hints, definitions, queen_bee
+      this._displayMilestone(); 
+    }
+  }
+
+  /**
+   * Displays milestone dialog.
+   * @private
+   * @memberOf beeMain
+   */
+  _displayMilestone() {
+    let elapsedTime = 0;
+    if (this.rank === 'Genius') {
+      elapsedTime = this.timestamps.genius - this.timestamps.start;
+    } else if (this.rank === 'Queen Bee') {
+      elapsedTime = this.timestamps.queen_bee - this.timestamps.start;
+      // now that puzzle is solved, remove dimming from all elements
+      const dimmedEls = Array.from( document.querySelectorAll('.dim') );
+      for (const dimmedEl of dimmedEls) {
+        dimmedEl.classList.remove('dim');
+      }
+    }
+
+    // display status dialog with score, time, and share options
+    this.milestoneDialog = document.getElementById('milestone-dialog');
+    this.dialogStatus.textContent = this.rank;
+    this.dialogTime.textContent = this._formatTime(elapsedTime);
+    // this.dialogShareButton
+
+    if (typeof this.milestoneDialog.showModal === 'function') {
+      this.milestoneDialog.showModal();
+    } else {
+      this._showMessage('Dialog API not supported by this browser');
+    }
+  }
+
+  /**
+   * Closes milestone dialog.
+   * @private
+   * @memberOf beeMain
+   */
+   _closeDialog () {
+    this.milestoneDialog.close(); 
   }
 
   /**
@@ -1130,16 +1273,38 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  async _shareStatus() {
-    try {
+  async _shareStatus( event ) {
+    const target = event.target;
+
+    let message = null;
+    if ( target === this.shareButton ) {
       const rank = (this.rank === 'Queen Bee') ? '👑🐝! Show me the honey' : this.rank;
+      message = `Spelling Bee rank: ${rank}!`;
+    } else if ( target === this.askButton ) {
+      const remainingWords = '';
+      message = `List of remaining words: ${remainingWords}!`;
+    }
+
+    try {
       const shareData = {
         title: 'Worker Bee',
-        text: `Spelling Bee rank: ${rank}!`,
+        text: message,
       }
 
-      await navigator.share(shareData);
-      console.log('Status shared successfully');
+      if (navigator.share) {
+        await navigator.share(shareData);
+        console.log('Status shared successfully');
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareData.text)
+          .then(() => {
+            this._showMessage('Status copied to clipboard');
+          })
+          .catch(err => {
+            this._showMessage('Error in copying text: ', err);
+          });
+      } else {
+        this._showMessage('Can\' share content!', 'warn');
+      }
     } catch (err) {
       console.error(`Error: ${err}`);
     }

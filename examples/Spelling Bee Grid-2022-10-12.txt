@@ -1,0 +1,135 @@
+
+
+Center letter is in bold.
+
+h a c d e k l
+
+WORDS: 43, POINTS: 189, PANGRAMS: 1 (1 Perfect)
+	4 	5 	6 	7 	8 	10 	Σ
+a: 	1 	2 	- 	- 	- 	- 	3
+c: 	1 	4 	1 	3 	- 	- 	9
+d: 	- 	1 	- 	- 	1 	1 	3
+e: 	1 	- 	- 	- 	- 	- 	1
+h: 	12 	1 	7 	1 	1 	- 	22
+l: 	1 	2 	- 	2 	- 	- 	5
+Σ: 	16 	10 	8 	6 	2 	1 	43
+
+Two letter list:
+
+ac-2 ah-1
+ca-2 ch-7
+da-1 de-2
+ea-1
+ha-8 he-14
+le-5
+------
+
+Beginner (0)
+Good Start (4)
+Moving Up (9)
+Good (15)
+Solid (28)
+Nice (47)
+Great (76)
+Amazing (95)
+Genius (132)
+Queen Bee (189)
+
+------
+
+ache
+ached
+ahead
+cache
+cached
+chad
+chalk
+chalked
+challah
+check
+checked
+cheek
+dacha
+deadhead
+deadheaded
+each
+hack
+hacked
+hackle
+haka
+hake
+halal
+hale
+hall
+head
+headache
+headed
+heal
+healed
+heck
+heckle
+heckled
+heed
+heeded
+heel
+heeled
+held
+hell
+leach
+leached
+lech
+leech
+leeched
+
+------
+Letters, scrambled:
+
+h c k e d l a
+
+------
+Words, scrambled:
+
+chalked
+
+cheek
+chalk
+leech
+heel
+lech
+halal
+haka
+heeded
+healed
+dacha
+challah
+deadheaded
+heal
+ahead
+deadhead
+heck
+headache
+hack
+leeched
+heckle
+hacked
+heckled
+check
+heed
+each
+hake
+leach
+hackle
+chad
+cached
+held
+head
+ached
+heeled
+hall
+hale
+headed
+hell
+cache
+leached
+ache
+checked
