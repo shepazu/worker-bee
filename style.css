@@ -327,13 +327,21 @@ button[type=remove]:hover {
 /* support links */
 footer {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: 3rem;
 }
 
 footer a.button,
 footer .button {
   padding: 7px 12.5px;
+}
+
+#share_links,
+#support_links {
+  display: flex;
+  justify-content: space-around;
 }
 
 
@@ -439,6 +447,50 @@ footer .button {
   display: none;
 }
 
+
+/* dialog */
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+dialog {
+  border-radius: 0.5rem;
+  border: none;
+  min-width: 30%;
+}
+
+dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+dialog section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#dialog-close {
+  background-color: transparent;
+  border: none;
+  color: var(--remove);
+  font-size: 2rem;
+  margin: -1rem 0 0 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+#dialog-status {
+  font-size: 2rem;
+}
+
+#dialog-time {
+  font-style: normal;
+  font-size: 1rem;
+  font-weight: bold;
+}
 
 /* Extra small devices (phones, 600px and down) */
 /* @media only screen and (max-width: 600px) { } */
