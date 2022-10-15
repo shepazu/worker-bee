@@ -358,15 +358,15 @@ export class beeMain extends EventTarget {
       const scoreArray = this.statsArray[1].split(':');
       this.totalPoints = parseInt(scoreArray[1]);
   
-      let ranksOutput = '';
+      // let ranksOutput = '';
       if (this.totalPoints) {
         this.rankings.forEach(( rank ) => {
           rank.score = Math.round(this.totalPoints * rank.percentage); 
 
           // testing output
-          ranksOutput += `${rank.name}: ${rank.score}, `;
+          // ranksOutput += `${rank.name}: ${rank.score}, `;
         });
-        console.log('rankings', ranksOutput);
+        // console.log('rankings', ranksOutput);
       }
     } 
     // else {
@@ -1025,18 +1025,11 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _showLetterCounts( firstLetter ) {
-    console.log('_showLetterCounts', firstLetter);
     const letterCountsInputs = Array.from(this.gridTableContainer.querySelectorAll(`[id^=${firstLetter}-]`));
     const letterBinCounts = [];
     for (const el of letterCountsInputs) {
-      // console.log('el.id', el.id);
-      // const bin = parseInt(el.id.split('-')[1]);
-      // if (!Number.isNaN(bin)) {
-      // }
       const bin = el.id.split('-')[1];
       if (bin !== 'Σ') {
-        // console.log(bin, el.value);
-        // letterBinCounts.push(`${bin} (${el.value})`);
         let binCount = '';
         if (el.value > 0) {
           binCount = bin;
@@ -1049,13 +1042,9 @@ export class beeMain extends EventTarget {
     }
 
     let letterBinTotals = letterBinCounts.join(', ');
-    // console.log('letterBinCounts', letterBinTotals);
     const twoLetterLists = Array.from(this.twoLetterListContainer.querySelectorAll(`.${firstLetter} span.length-counts`));
-    // const twoLetterLists = Array.from(this.twoLetterListContainer.querySelectorAll(`.${firstLetter}`));
-    // console.log('twoLetterLists', twoLetterLists);
     const activeTwoLetterLists = twoLetterLists.filter( (el) => {
       // remove any previous displays
-      // const binDisplayEl = el.querySelector('span.length-counts');
       el.textContent = '';
 
       // find only the elements greater than zero
@@ -1068,8 +1057,6 @@ export class beeMain extends EventTarget {
     }
 
     for (const entry of activeTwoLetterLists) {
-      // const binDisplayEl = entry.querySelector('span.length-counts');
-      // binDisplayEl.textContent = letterBinTotals;
       entry.textContent = letterBinTotals;
     }
   }
@@ -1170,7 +1157,7 @@ export class beeMain extends EventTarget {
     }
     this.pointScore += points;
 
-    let message = `${points} points`;
+    let message = `${points} point${(points > 1)? 's' : ''}`;
     if (isPangram) {
       this.pointScore += (pangramBonusPoints * modifier);
       message = `Pangram! ${points} points, plus ${pangramBonusPoints} bonus points!`;
@@ -1427,7 +1414,7 @@ export class beeMain extends EventTarget {
 
       if (navigator.share) {
         await navigator.share(shareData);
-        console.log('Status shared successfully');
+        this._showMessage('Status shared successfully', '');
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(shareData.text)
           .then(() => {
