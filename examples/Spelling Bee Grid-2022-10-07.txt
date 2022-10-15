@@ -1,0 +1,138 @@
+a c d e h i k
+
+WORDS: 41, POINTS: 172, PANGRAMS: 1, BINGO
+	4 	5 	6 	7 	8 	9 	10 	Σ
+a: 	5 	4 	3 	1 	- 	- 	- 	13
+c: 	4 	3 	3 	1 	- 	1 	- 	12
+d: 	2 	1 	1 	- 	1 	- 	1 	6
+e: 	1 	- 	- 	- 	- 	- 	- 	1
+h: 	4 	- 	2 	- 	1 	- 	- 	7
+i: 	1 	- 	- 	- 	- 	- 	- 	1
+k: 	- 	1 	- 	- 	- 	- 	- 	1
+Σ: 	17 	9 	9 	2 	2 	1 	1 	41
+
+Two letter list:
+
+ac-9 ad-1 ah-1 ai-2
+ca-6 ch-5 ci-1
+da-2 de-4
+ea-1
+ha-4 he-3
+id-1
+kh-1 
+
+-----
+
+AC
+•	Yellow flowered tree(6)	
+•	Edible purple berries(4)
+•	Agree to demand(6)
+•	Agreed to demand(7)
+•	Scored highest grade(4)
+•	Prolonged pain(4)
+•	Painful(5)
+•	LSD(4)
+•	Sour tasting(6)
+AD
+•	Summed up(5)
+AH
+•	In front(5)
+AI
+•	Helper(4)
+•	Helped(5)
+CA
+•	Stockpile(5)
+•	Stored away(6)
+•	Carries golf clubs(6)
+•	Carried golf clubs(7)
+•	Baked birthday food(4)	
+•	Encrusted mud(6)
+CH
+•	Bits of paper(4)
+•	Indian tea(4)
+•	Edible seeds(4)	
+•	Young girl (5)
+•	Black and white bird(9)
+CI
+•	Noisy insect(6)
+DA
+•	Minnow(4)	
+•	Russian cottage(5)
+DE
+•	Deceased(4)
+•	No passengers flight(8)	
+•	Flew for free(10)	
+•	Ten years (6)
+EA
+•	Apiece(4)	
+HA
+•	Unauthorized access(4)
+•	Accessed illegally(6)
+•	Maori war dance(4)
+•	Long jawed fish(4)
+HE
+•	Skull(4)
+•	Migraine(8)
+•	Went in specific direction(6)		
+ID
+•	A thought(4)		
+KH
+•	Light brown pants(5)
+
+
+-----
+AC
+•	Yellow flowered tree(6)	
+•	Edible purple berries(4)
+•	Agree to demand(6)
+•	Agreed to demand(7)
+•	Scored highest grade(4)
+•	Prolonged pain(4)
+•	Painful(5)
+•	LSD(4)
+•	Sour tasting(6)
+AD
+•	Summed up(5)
+AH
+•	In front(5)
+AI
+•	Helper(4)
+•	Helped(5)
+CA
+•	Stockpile(5)
+•	Stored away(6)
+•	Carries golf clubs(6)
+•	Carried golf clubs(7)
+•	Baked birthday food(4)	
+•	Encrusted mud(6)
+CH
+•	Bits of paper(4)
+•	Indian tea(4)
+•	Edible seeds(4)	
+•	Young girl (5)
+•	Black and white bird(9)
+CI
+•	Noisy insect(6)
+DA
+•	Minnow(4)	
+•	Russian cottage(5)
+DE
+•	Deceased(4)
+•	No passengers flight(8)	
+•	Flew for free(10)	
+•	Ten years (6)
+EA
+•	Apiece(4)	
+HA
+•	Unauthorized access(4)
+•	Accessed illegally(6)
+•	Maori war dance(4)
+•	Long jawed fish(4)
+HE
+•	Skull(4)
+•	Migraine(8)
+•	Went in specific direction(6)		
+ID
+•	A thought(4)		
+KH
+•	Light brown pants(5)

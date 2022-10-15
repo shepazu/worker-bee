@@ -1,0 +1,82 @@
+Center letter is in bold.
+
+r c f i n o t
+
+WORDS: 45, POINTS: 187, PANGRAMS: 1
+	4 	5 	6 	7 	8 	10 	Σ
+c: 	3 	3 	3 	1 	1 	2 	13
+f: 	1 	1 	- 	- 	1 	- 	3
+i: 	1 	1 	1 	- 	- 	- 	3
+n: 	2 	1 	1 	- 	- 	- 	4
+r: 	6 	2 	2 	- 	- 	- 	10
+t: 	6 	2 	2 	2 	- 	- 	12
+Σ: 	19 	10 	9 	3 	2 	2 	45
+
+Two letter list:
+
+ci-3 co-6 cr-4
+fo-1 fr-2
+in-1 ir-2
+ni-2 no-2
+ri-4 ro-6
+to-7 tr-5 
+
+------
+Beginner (0)
+Good Start (4)
+Moving Up (9)
+Good (15)
+Solid (28)
+Nice (47)
+Great (75)
+Amazing (94)
+Genius (131)
+Queen Bee (187)
+
+------
+cirri
+citric
+citron
+coir
+confront
+contort
+contortion
+contrition
+corn
+critic
+croc
+croci
+croon
+fort
+friction
+front
+intro
+iron
+ironic
+nitric
+nitro
+noir
+nori
+ricin
+riff
+rift
+riot
+rococo
+roof
+root
+roti
+rotini
+rotor
+tori
+toric
+torii
+torn
+toro
+tort
+tort
+tortoni
+tricorn
+tricot
+trio
+triton
+trot

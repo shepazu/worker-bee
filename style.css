@@ -14,6 +14,8 @@
   --table_header_text: white;
   --heading_text: goldenrod;
   --background: gold;
+  --notification_color: hsl(43, 74%, 29%);
+  --bin_text: hsl(43, 74%, 29%);
 
   --accept: hsl(87, 60%, 60%);
   --reject: hsl(323, 68%, 83%);
@@ -144,6 +146,14 @@ details summary {
 
 details[open] summary {
   list-style-type: '🍯 ';
+}
+
+details section {
+  outline: 1px var(--table_color) solid;
+}
+
+details section p {
+  padding: 0 1.5rem 1rem 1.5rem;
 }
 
 #word-input {
@@ -291,6 +301,12 @@ time {
   padding: 0 0.3rem;
 }
 
+.length-counts {
+  color: var(--bin_text);
+  padding-left: 0.8rem;
+  font-size: 0.8rem;
+}
+
 #two-letter-lists dl, 
 #discovery-order-list ol {
   /* flex-grow: 1; */
@@ -388,7 +404,8 @@ footer .button {
 /* word list tabs */
 .tabs {
   position: relative;
-  min-height: 30rem;
+  /* change to increase tab area height */
+  min-height: 36rem;
   /* Fix to use flexbox? */
   clear: both;
   margin: 1rem 0;
@@ -492,6 +509,43 @@ dialog section {
   font-weight: bold;
 }
 
+/* Notification toast */
+ /* The notification - position it at the top and in the middle of the screen */
+ #notification {
+  visibility: hidden; 
+  background-color: var(--notification_color);
+  color: var(--table_header_text);
+  text-align: center; /* Centered text */
+  border-radius: 2px; /* Rounded borders */
+  padding: 16px; /* Padding */
+  position: fixed; /* Sit on top of the screen */
+  z-index: 1; 
+
+  /* replace this with flexbox? */
+  min-width: 250px; /* Set a default minimum width */
+  margin-left: -125px; /* Divide value of min-width by 2 */
+  left: 50%; /* Center the notification */
+  top: 30px; /* 30px from the bottom */
+}
+
+#notification.show {
+  visibility: visible;
+  /* Add animation: Take 0.5 seconds to fade in and out the notification.
+  Delay the fade out process for 2.5 seconds */
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the notification in and out */
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+} 
+
 /* Extra small devices (phones, 600px and down) */
 /* @media only screen and (max-width: 600px) { } */
 
@@ -516,6 +570,11 @@ dialog section {
   .bee {
     display: inline;
     font-size: 4rem; 
+  }
+
+  .tabs {
+    /* change to increase tab area height */
+    min-height: 42rem;
   }
 
   #two-letter-lists dl,
