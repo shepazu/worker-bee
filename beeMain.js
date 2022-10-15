@@ -150,7 +150,9 @@ export class beeMain extends EventTarget {
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
     this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
-  
+
+    // this.notification.addEventListener('animationend', () => this.notification.classList.remove('show') );
+
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
     this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
 
@@ -224,6 +226,9 @@ export class beeMain extends EventTarget {
             // has a different letter array, so wipe the word list 
             this.wordList = [];
           } else {
+            // TODO: tally all points of currently found words, and show total points when loop complete
+            //  or suppress single-point messsage
+
             // has the same letter array, so this is the same session, 
             //  so add any existing discovered words in word list to two-letter lists
             this.wordList.forEach( (entry) => {
@@ -1129,7 +1134,9 @@ export class beeMain extends EventTarget {
 
     if (this.isBingo) {
       this._showMessage('Bingo!', '');
-      this.bingoStatEl.replaceChildren('!');
+      if (this.bingoStatEl) {
+        this.bingoStatEl.replaceChildren('!');
+      }
     }
   }
 
@@ -1170,7 +1177,9 @@ export class beeMain extends EventTarget {
 
     this._showMessage(message, '');
 
-    this._updateRank();
+    if (this.mode === 'hints') {
+      this._updateRank();
+    }
   }
 
   /**
@@ -1325,10 +1334,11 @@ export class beeMain extends EventTarget {
 
     // Add the 'show' class to notification
     this.notification.textContent = message;
-    this.notification.className = 'show';
+    this.notification.classList.add('show');
 
     // After 3 seconds, remove the show class from DIV
-    setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
+    // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
+    setTimeout(() => { this.notification.classList.remove('show'); }, 3000);
   }
 
 
