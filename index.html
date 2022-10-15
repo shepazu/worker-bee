@@ -18,7 +18,11 @@
   <main>
     <details id="bee-grid-details" open>
       <summary id="bee-grid-label">Paste bee letter list, grid, and two-letter list hints here:</summary>
-      <textarea id="bee-grid" aria-labelledby="bee-grid-label"></textarea>
+      <section>
+        <textarea id="bee-grid" aria-labelledby="bee-grid-label"></textarea>
+
+        <p>To start without hints, just enter the list of letters, starting with the center letter, separated by a space. If you enter hints later, the words you've already discovered will be sorted into the two-letter lists automatically.</p>
+      </section>
     </details>
     <section id="letters-block"></section>
     <section id="stats-block"></section>
@@ -29,7 +33,6 @@
       <button id="enter-button" class="button">enter</button>
     </section>
     <section id="grid-table"></section>
-    <section id="list-block"></section>
 
     <section id="list-tabs" class="tabs hidden">
       <div class="tab">
@@ -60,6 +63,8 @@
       <button id="dialog-share_button" class="button" autofocus>share status</button>
     </section>
   </dialog>
+
+  <div id="notification">Some text some message..</div> 
 
   <footer>
     <section id="share_links">
