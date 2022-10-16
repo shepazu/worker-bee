@@ -100,6 +100,8 @@ export class beeMain extends EventTarget {
       },
     };
 
+    this.messageQueue = [];
+
     this.mode = 'hints';
 
     // DOM elements
@@ -181,7 +183,9 @@ export class beeMain extends EventTarget {
  
 
       if (!hasLetters) {
-        this._showMessage('No list of letters found', 'warn');
+        if (!this.lettersArray) {
+          this._showMessage('No list of letters found', 'warn');
+        }
       } else {
         // compare prior and current list of letters, irrespective of order
         let isSameLetters = false;
@@ -259,7 +263,7 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _findLetterList() {
-    const letterList = this.hintText.match(/(\w\s){6}\w/);
+    let letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
       this.lettersBlockContainer.replaceChildren('');
       this.lettersArray = letterList[0].split(/\s/);
@@ -281,6 +285,10 @@ export class beeMain extends EventTarget {
 
       return true;
     } else {
+      // check for inputting letters one at a time
+      letterList = this.hintText.match(/\w/);
+      this.lettersArray = letterList[0].split(/[\s,]/);
+
       return false;
     }
   }
@@ -727,7 +735,11 @@ export class beeMain extends EventTarget {
       list.append( twoLetterTermEl );
     }
 
-    this.twoLetterListContainer.replaceChildren( list ); 
+    this.twoLetterListContainer.replaceChildren( list );
+
+    for (const firstLetter of this.lettersArray) {
+      this._showLetterCounts( firstLetter.toUpperCase() ); 
+    }
   }
 
   /**
@@ -1338,7 +1350,12 @@ export class beeMain extends EventTarget {
 
     // After 3 seconds, remove the show class from DIV
     // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
-    setTimeout(() => { this.notification.classList.remove('show'); }, 3000);
+    setTimeout(() => { 
+      this.notification.classList.remove('show');
+    }, 3000);
+
+    // this.messageQueue.push(message);
+    // this._displayMessage();
   }
 
 
@@ -1347,7 +1364,30 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-   _displayMilestone() {
+  _displayMessage() {
+    if (!this.notification.classList.contains('show')) {
+      const message = this.messageQueue.shift();
+
+      // Add the 'show' class to notification
+      this.notification.textContent = message;
+      this.notification.classList.add('show');
+  
+      // After 3 seconds, remove the show class from DIV
+      // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
+      setTimeout(() => { 
+        this.notification.classList.remove('show');
+        this._displayMessage().bind(this);
+      }, 3000);
+    }
+  }
+
+
+  /**
+   * Displays milestone dialog.
+   * @private
+   * @memberOf beeMain
+   */
+  _displayMilestone() {
     // let elapsedTime = 0;
     let message = '';
     if (this.rank === 'Genius') {
@@ -1374,7 +1414,9 @@ export class beeMain extends EventTarget {
     // this.dialogShareButton
 
     if (typeof this.milestoneDialog.showModal === 'function') {
-      this.milestoneDialog.showModal();
+      if (!this.milestoneDialog.open) {
+        this.milestoneDialog.showModal();
+      }
     } else {
       this._showMessage('Dialog API not supported by this browser');
     }
