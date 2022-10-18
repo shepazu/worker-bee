@@ -1,0 +1,76 @@
+Center letter is in bold.
+
+u c d e h o t
+
+WORDS: 39, POINTS: 182, PANGRAMS: 1 (1 Perfect)
+	4 	5 	6 	7 	8 	Σ
+c: 	2 	3 	1 	1 	- 	7
+d: 	3 	2 	4 	3 	1 	13
+e: 	- 	2 	1 	- 	- 	3
+h: 	1 	1 	- 	- 	- 	2
+o: 	1 	2 	- 	- 	- 	3
+t: 	4 	2 	3 	2 	- 	11
+Σ: 	11 	12 	9 	6 	1 	39
+
+Two letter list:
+
+ch-1 co-3 cu-3
+de-5 do-2 du-6
+ed-2 et-1
+hu-2
+ou-3
+th-3 to-5 tu-3 
+
+
+-----
+Beginner (0)
+Good Start (4)
+Moving Up (9)
+Good (15)
+Solid (27)
+Nice (46)
+Great (73)
+Amazing (91)
+Genius (127)
+
+-----
+
+chute
+couch
+couched
+couth
+cued
+cute
+cutout
+deduce
+deduced
+deduct
+deducted
+deuce
+douche
+douched
+duct
+ducted
+dude
+duded
+duet
+duetted
+educe
+educed
+etude
+hued
+hutch
+ouch
+outdo
+outed
+thou
+thud
+thudded
+touch
+touche
+touched
+tout
+touted
+tutee
+tutted
+tutu

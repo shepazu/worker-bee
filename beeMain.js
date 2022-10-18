@@ -8,6 +8,8 @@ export class beeMain extends EventTarget {
       lettersArray: null,
       priorLettersArray: null,
       statsArray: null,
+      gridTableArray: null,
+      twoLetterArray: null,
       letterCountArray: null,
       wordList: [],
       totalWords: null,
@@ -103,107 +105,12 @@ export class beeMain extends EventTarget {
       mode: 'hints',
     };
 
-    // this.hintText = null;
-    // this.lettersArray = null;
-    // this.priorLettersArray = null;
-    // this.statsArray = null;
-    // this.letterCountArray = null;
-    // this.wordList = [];
-    // this.totalWords = null;
-    // this.wordsFound = 0;
-    // this.totalPoints = null;
-    // this.pointScore = 0;
-    // this.pangrams = 0;
-    // this.pangramsFound = 0;
-    // this.perfectPangrams = 0;
-    // this.perfectPangramsFound = 0;
-    // this.rank = 'Beginner';
-    // this.rankings = [
-    //   {
-    //     name: 'Beginner',
-    //     percentage: 0,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Good Start',
-    //     percentage: 0.02,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Moving Up',
-    //     percentage: 0.05,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Good',
-    //     percentage: 0.08,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Solid',
-    //     percentage: 0.15,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Nice',
-    //     percentage: 0.25,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Great',
-    //     percentage: 0.4,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Amazing',
-    //     percentage: 0.5,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Genius',
-    //     percentage: 0.7,
-    //     score: null,
-    //   },
-    //   {
-    //     name: 'Queen Bee',
-    //     percentage: 1,
-    //     score: null,
-    //   },
-    // ];
-    // this.bingoArray = [];
-    // this.isBingo = false;
-    // this.times = {
-    //   start: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    //   genius: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    //   hints: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    //   definitions: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    //   queen_bee: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    //   current: {
-    //     timestamp: null,
-    //     elapsed: null,
-    //   },
-    // };
-    // this.mode = 'hints';
-
+    this.hintText = null;
     this.messageQueue = [];
 
 
     // DOM elements
+    this.hintInputDetails = document.getElementById('bee-grid-details');
     this.addWordContainer = document.getElementById('add-word-block');
     this.lettersBlockContainer = document.getElementById('letters-block');
     this.statsBlockContainer = document.getElementById('stats-block');
@@ -258,6 +165,9 @@ export class beeMain extends EventTarget {
     this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
 
     this.dialogShareButton.addEventListener('click', this._shareStatus.bind(this));
+
+    // see if there's an existing state for today, and restore it if so
+    this._restoreState();
   }
 
   /**
@@ -298,7 +208,7 @@ export class beeMain extends EventTarget {
         //   then start the clock for a new game
         if (!this.state.priorLettersArray || isSameLetters) {
           // start the clock
-          this.state.times.start.timestamp =  Date.now(); 
+          this.state.times.start.timestamp = Date.now(); 
         }    
         // console.log('isSameLetters', isSameLetters);
 
@@ -322,38 +232,50 @@ export class beeMain extends EventTarget {
           this.twoLetterListsTab.checked = true;
 
           // find and display the grid and two-letter lists
-          this._findGrid();
-          this._findTwoLetterList();
+          this._parseGrid();
+          this._parseTwoLetterList();
 
           if (!isSameLetters) {
             // has a different letter array, so wipe the word list 
             this.state.wordList = [];
           } else {
-            // TODO: tally all points of currently found words, and show total points when loop complete
-            //  or suppress single-point messsage
-
-            // has the same letter array, so this is the same session, 
-            //  so add any existing discovered words in word list to two-letter lists
-            this.state.wordList.forEach( (entry) => {
-              const word = entry.word;
-              
-              // add word to discovery-order list
-              this._displayDiscoveryOrderListWord( word, 'className', entry.isPangram );
-
-              // find matching two-letter category
-              const twoLetterCode = word.substring(0, 2).toUpperCase();
-              this._displayTwoLetterListWord( word, twoLetterCode, entry.isPangram );
-            });
-
-            // now that we can calculate ranks, show rank
-            this._updateRank();
+            this._restoreWordList();
           }
         }
 
-        target.closest('details').removeAttribute('open');
+        this.hintInputDetails.removeAttribute('open');
         this.addWordContainer.classList.remove('hidden');
       }
     }
+  }
+
+  /**
+   * Restores list of words.
+   * @private
+   * @memberOf beeMain
+   */
+  _restoreWordList() {
+    // TODO: tally all points of currently found words, and show total points when loop complete
+    //  or suppress single-point messsage
+
+    this.listTabsContainer.classList.remove('hidden');
+    this._createDiscoveryOrderList();
+
+    // has the same letter array, so this is the same session, 
+    //  so add any existing discovered words in word list to two-letter lists
+    this.state.wordList.forEach( (entry) => {
+      const word = entry.word;
+      
+      // add word to discovery-order list
+      this._displayDiscoveryOrderListWord( word, 'className', entry.isPangram );
+
+      // find matching two-letter category
+      const twoLetterCode = word.substring(0, 2).toUpperCase();
+      this._displayTwoLetterListWord( word, twoLetterCode, entry.isPangram );
+    });
+
+    // now that we can calculate ranks, show rank
+    this._updateRank();
   }
 
   /**
@@ -447,7 +369,7 @@ export class beeMain extends EventTarget {
         {
           title: 'word-count',
           value: this.state.totalWords,
-          current: this.wordsFound,
+          current: this.state.wordsFound,
         },
       ]
     );
@@ -621,16 +543,16 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _findGrid() {
+  _parseGrid() {
     const header = this._findGridHeader();
     const wordLengths = this._findWordLengthCounts();
     const totals = this._findWordLengthTotals();
 
-    const gridTableArray = wordLengths;
-    gridTableArray.unshift(header);
-    gridTableArray.push(totals);
+    this.state.gridTableArray = wordLengths;
+    this.state.gridTableArray.unshift(header);
+    this.state.gridTableArray.push(totals);
 
-    this._createGrid(gridTableArray);
+    this._createGrid();
   }
 
   /**
@@ -713,11 +635,11 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _findTwoLetterList() {
+  _parseTwoLetterList() {
     let twoLetterArray = this.hintText.match(/\w\w-\d+/g);
     if (twoLetterArray) {
-      twoLetterArray = twoLetterArray.map((str) => str.toUpperCase() );
-      this._createTwoLetterList( twoLetterArray );
+      this.state.twoLetterArray = twoLetterArray.map((str) => str.toUpperCase() );
+      this._createTwoLetterList();
     }  else {
       this._showMessage('No list of two letters found', 'warn');
     }
@@ -725,19 +647,18 @@ export class beeMain extends EventTarget {
 
   /**
    * Creates word count grid as table.
-   * @param {Array} gridTableArray The array of all grid cells.
    * @private
    * @memberOf beeMain
    */
-  _createGrid( gridTableArray ) {
+  _createGrid() {
     const gridTable = document.createElement('table');
     const tableHead = gridTable.createTHead();
     const tableBody = gridTable.createTBody();
     const tableFoot = gridTable.createTFoot();
 
-    const rowLength = gridTableArray.length;
+    const rowLength = this.state.gridTableArray.length;
     for (let rowIndex = 0; rowIndex < rowLength; rowIndex++) {
-      const row = gridTableArray[rowIndex];
+      const row = this.state.gridTableArray[rowIndex];
 
       let container = tableBody;
       if (rowIndex === 0) {
@@ -751,7 +672,7 @@ export class beeMain extends EventTarget {
       let columnLength = row.length;
       for (let columnIndex = 0; columnIndex < columnLength; columnIndex++) {
         const column = row[columnIndex];
-        const wordCount = gridTableArray[0][columnIndex].trim();
+        const wordCount = this.state.gridTableArray[0][columnIndex].trim();
 
         let cellType = 'td';
         let cellContent = column;
@@ -798,14 +719,13 @@ export class beeMain extends EventTarget {
 
   /**
    * Creates two letter list output.
-   * @param {Array} twoLetterArray The lest of two letter codes, with the first two letter and the length of the word.
    * @private
    * @memberOf beeMain
    */
-  _createTwoLetterList( twoLetterArray ) {
+  _createTwoLetterList() {
     const list = document.createElement('dl');
 
-    for (const twoLetterCount of twoLetterArray) {
+    for (const twoLetterCount of this.state.twoLetterArray) {
       const twoLetterCodeArray = twoLetterCount.split('-');
       const twoLetterCode = twoLetterCodeArray[0];
       const count = parseInt(twoLetterCodeArray[1]);
@@ -847,7 +767,7 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _addWord( event ) {
+  async _addWord( event ) {
     const target = event.target;
     const addWordList = target.value.trim();
 
@@ -910,13 +830,11 @@ export class beeMain extends EventTarget {
 
               // this._showMessage('word added', '');
 
-
-              // console.log('this.state.wordList', this.state.wordList);
-
-              this.wordsFound = this.state.wordList.length;
+              // update word count
+              this.state.wordsFound = this.state.wordList.length;
               this._updateWordCount();
 
-              // // add word to discovery-order list
+              // add word to discovery-order list
               this._displayDiscoveryOrderListWord( eachWord, 'className', isPangram );
 
               // add word to appropriate two-letter list
@@ -965,23 +883,25 @@ export class beeMain extends EventTarget {
   _displayTwoLetterListWord( word, className, isPangram ) {
     const twoLetterTerm = document.getElementById( className );
 
-    const wordDefEl = this._createWordListItem( word, true, className, isPangram )
-    twoLetterTerm.after( wordDefEl );
-
-    // sort words alphabetically
-    const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${className}`));
-    siblingWords.sort( (a, b) => {
-      if (a.id < b.id) {
-        return -1;
-      } else if (a.id > b.id) {
-        return 1;
-      }
-      return 0;
-    });
-    twoLetterTerm.after( ...siblingWords );
-
-    // update two-letter term and grid numbers
-    this._updateGridCountsByWord( word );              
+    if (twoLetterTerm) {
+      const wordDefEl = this._createWordListItem( word, true, className, isPangram )
+      twoLetterTerm.after( wordDefEl );
+  
+      // sort words alphabetically
+      const siblingWords = Array.from(this.twoLetterListContainer.querySelectorAll(`dd.${className}`));
+      siblingWords.sort( (a, b) => {
+        if (a.id < b.id) {
+          return -1;
+        } else if (a.id > b.id) {
+          return 1;
+        }
+        return 0;
+      });
+      twoLetterTerm.after( ...siblingWords );
+  
+      // update two-letter term and grid numbers
+      this._updateGridCountsByWord( word );              
+    }
   }
 
   /**
@@ -1289,6 +1209,9 @@ export class beeMain extends EventTarget {
     if (this.state.mode === 'hints') {
       this._updateRank();
     }
+
+    // save state
+    this._saveState();
   }
 
   /**
@@ -1331,13 +1254,8 @@ export class beeMain extends EventTarget {
    */
   _updateWordCount( isIncrement = true ) {
     const modifier = isIncrement ? 1 : -1;
-    // if (letterCount === 4) {
-    //   this.state.pointScore += modifier;
-    // } else {
-    //   this.state.pointScore += (letterCount * modifier);
-    // }
     if (this.wordCountStatEl) {
-      this.wordCountStatEl.replaceChildren( this.wordsFound );
+      this.wordCountStatEl.replaceChildren( this.state.wordsFound );
     }
   }
 
@@ -1577,6 +1495,67 @@ export class beeMain extends EventTarget {
       }
     } catch (err) {
       console.error(`Error: ${err}`);
+    }
+  }
+
+  /**
+   * Provides a date string in YYYY-MM-DD format.
+   * @private
+   * @memberOf beeMain
+   * @return {string} The date in YYYY-MM-DD format.
+   */
+  _getDateCode() {
+    // const date = Date.now();
+    // const date = Date.now();
+    const date = new Date(Date.now());
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // getMonth() returns month from 0 to 11
+    const year = date.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Saves the game state to the browser local storage.
+   * @private
+   * @memberOf beeMain
+   */
+  async _saveState() {
+    const saveStateString = JSON.stringify(this.state);
+    const dateCode = this._getDateCode();
+    localStorage.setItem(`workerBeeSaveState-${dateCode}`, saveStateString);
+  }
+
+  /**
+   * Restores the game state from the browser local storage.
+   * @private
+   * @memberOf beeMain
+   */
+  async _restoreState() {
+    const dateCode = this._getDateCode();
+    const restoredState = localStorage.getItem(`workerBeeSaveState-${dateCode}`);
+    if (restoredState) {
+      const restoredStateJSON = JSON.parse(restoredState);
+      // console.log('_restoreState', restoredStateJSON);
+  
+      this.state = restoredStateJSON;
+
+      // close the hint input
+      this.hintInputDetails.removeAttribute('open');
+  
+      // show the word entry form
+      this.addWordContainer.classList.remove('hidden');
+
+      // has letters and stats, so default to the two-letter list tab
+      // this.twoLetterListsTab.checked = true;
+
+      this._showStats();
+  
+      // find and display the grid and two-letter lists
+      this._createGrid();
+      this._createTwoLetterList();
+  
+      this._restoreWordList();
     }
   }
 }
