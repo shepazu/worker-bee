@@ -105,6 +105,8 @@ export class beeMain extends EventTarget {
       mode: 'hints',
     };
 
+    this.blankState = JSON.parse(JSON.stringify(this.state));
+
     this.hintText = null;
     this.messageQueue = [];
 
@@ -121,6 +123,7 @@ export class beeMain extends EventTarget {
     this.enterButton = document.getElementById('enter-button');
     this.shareButton = document.getElementById('share_button');
     this.askButton = document.getElementById('ask_button');
+    this.resetButton = document.getElementById('reset_button');
     this.notification = document.getElementById('notification');
 
     this.milestoneDialog = document.getElementById('milestone-dialog');
@@ -166,6 +169,8 @@ export class beeMain extends EventTarget {
 
     this.dialogShareButton.addEventListener('click', this._shareStatus.bind(this));
 
+    this.resetButton.addEventListener('click', this._resetState.bind(this));
+
     // see if there's an existing state for today, and restore it if so
     this._restoreState();
   }
@@ -206,10 +211,16 @@ export class beeMain extends EventTarget {
         // if there wasn't a prior (no-hints) session, or 
         //   if there was a session but it was for a different set of lettters,
         //   then start the clock for a new game
-        if (!this.state.priorLettersArray || isSameLetters) {
+        if (!this.state.priorLettersArray || !isSameLetters) {
+          // TODO: decide when to invoke this
+          // revert game state to default starting values
+          this.state = JSON.parse(JSON.stringify(this.blankState));
+
           // start the clock
           this.state.times.start.timestamp = Date.now(); 
-        }    
+        }  else if (this.state.priorLettersArray && isSameLetters) {
+          this._showMessage('Welcome back', '');
+        }  
         // console.log('isSameLetters', isSameLetters);
 
 
@@ -651,60 +662,65 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _createGrid() {
-    const gridTable = document.createElement('table');
-    const tableHead = gridTable.createTHead();
-    const tableBody = gridTable.createTBody();
-    const tableFoot = gridTable.createTFoot();
+    // remove any prior grid table
+    this.gridTableContainer.replaceChildren(''); 
 
-    const rowLength = this.state.gridTableArray.length;
-    for (let rowIndex = 0; rowIndex < rowLength; rowIndex++) {
-      const row = this.state.gridTableArray[rowIndex];
+    if (this.state.gridTableArray && this.state.gridTableArray.length) {
+      const gridTable = document.createElement('table');
+      const tableHead = gridTable.createTHead();
+      const tableBody = gridTable.createTBody();
+      const tableFoot = gridTable.createTFoot();
 
-      let container = tableBody;
-      if (rowIndex === 0) {
-        container = tableHead;
-      } else if (rowIndex === rowLength - 1) {
-        container = tableFoot;
-      }
+      const rowLength = this.state.gridTableArray.length;
+      for (let rowIndex = 0; rowIndex < rowLength; rowIndex++) {
+        const row = this.state.gridTableArray[rowIndex];
 
-      const letterHead = row[0].toUpperCase();
-      const rowEl = container.insertRow();
-      let columnLength = row.length;
-      for (let columnIndex = 0; columnIndex < columnLength; columnIndex++) {
-        const column = row[columnIndex];
-        const wordCount = this.state.gridTableArray[0][columnIndex].trim();
-
-        let cellType = 'td';
-        let cellContent = column;
-        let cellId = null;
-        if (rowIndex === 0 || columnIndex === 0) {
-          cellType = 'th';
+        let container = tableBody;
+        if (rowIndex === 0) {
+          container = tableHead;
         } else if (rowIndex === rowLength - 1) {
-          cellId = `Σ-${wordCount}`;
-        } else {
-          if (typeof column === 'number') {
-            const id = `${letterHead}-${wordCount}`;
-            if (columnIndex === columnLength - 1) {
-              cellContent = column;
-              cellId = id;
-            } else {
-              cellContent = this._createNumberInput( column, id );
-            }
+          container = tableFoot;
+        }
+
+        const letterHead = row[0].toUpperCase();
+        const rowEl = container.insertRow();
+        let columnLength = row.length;
+        for (let columnIndex = 0; columnIndex < columnLength; columnIndex++) {
+          const column = row[columnIndex];
+          const wordCount = this.state.gridTableArray[0][columnIndex].trim();
+
+          let cellType = 'td';
+          let cellContent = column;
+          let cellId = null;
+          if (rowIndex === 0 || columnIndex === 0) {
+            cellType = 'th';
+          } else if (rowIndex === rowLength - 1) {
+            cellId = `Σ-${wordCount}`;
           } else {
-            cellContent = '';
+            if (typeof column === 'number') {
+              const id = `${letterHead}-${wordCount}`;
+              if (columnIndex === columnLength - 1) {
+                cellContent = column;
+                cellId = id;
+              } else {
+                cellContent = this._createNumberInput( column, id );
+              }
+            } else {
+              cellContent = '';
+            }
           }
-        }
 
-        const cellEl = document.createElement(cellType);
-        if (cellId) {
-          cellEl.id = cellId;
+          const cellEl = document.createElement(cellType);
+          if (cellId) {
+            cellEl.id = cellId;
+          }
+          cellEl.append(cellContent);
+          rowEl.append(cellEl);
         }
-        cellEl.append(cellContent);
-        rowEl.append(cellEl);
       }
-    }
 
-    this.gridTableContainer.replaceChildren(gridTable); 
+      this.gridTableContainer.replaceChildren(gridTable); 
+    }
   }
 
   /**
@@ -723,41 +739,43 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _createTwoLetterList() {
-    const list = document.createElement('dl');
-
-    for (const twoLetterCount of this.state.twoLetterArray) {
-      const twoLetterCodeArray = twoLetterCount.split('-');
-      const twoLetterCode = twoLetterCodeArray[0];
-      const count = parseInt(twoLetterCodeArray[1]);
-
-      const twoLetterTermEl = document.createElement('dt');
-      twoLetterTermEl.classList.add(twoLetterCode[0], twoLetterCode);
-      twoLetterTermEl.id = twoLetterCode;
-
-      const twoLetterItem = document.createElement('span');
-      twoLetterItem.append( twoLetterCode );
-      twoLetterItem.classList.add('two_letter_code');
-      twoLetterTermEl.append( twoLetterItem );
-
-      const separator = document.createElement('span');
-      separator.classList.add('separator');
-      separator.append( '-' );
-      twoLetterTermEl.append( separator );
-
-      const twoLetterValue = this._createNumberInput( count, `${twoLetterCount}-count` );
-      twoLetterTermEl.append( twoLetterValue );
-
-      const lengthCountEl = document.createElement('span');
-      lengthCountEl.classList.add('length-counts');
-      twoLetterTermEl.append( lengthCountEl );
-
-      list.append( twoLetterTermEl );
-    }
-
-    this.twoLetterListContainer.replaceChildren( list );
-
-    for (const firstLetter of this.state.lettersArray) {
-      this._showLetterCounts( firstLetter.toUpperCase() ); 
+    if (this.state.twoLetterArray && this.state.twoLetterArray.length) {
+      const list = document.createElement('dl');
+  
+      for (const twoLetterCount of this.state.twoLetterArray) {
+        const twoLetterCodeArray = twoLetterCount.split('-');
+        const twoLetterCode = twoLetterCodeArray[0];
+        const count = parseInt(twoLetterCodeArray[1]);
+  
+        const twoLetterTermEl = document.createElement('dt');
+        twoLetterTermEl.classList.add(twoLetterCode[0], twoLetterCode);
+        twoLetterTermEl.id = twoLetterCode;
+  
+        const twoLetterItem = document.createElement('span');
+        twoLetterItem.append( twoLetterCode );
+        twoLetterItem.classList.add('two_letter_code');
+        twoLetterTermEl.append( twoLetterItem );
+  
+        const separator = document.createElement('span');
+        separator.classList.add('separator');
+        separator.append( '-' );
+        twoLetterTermEl.append( separator );
+  
+        const twoLetterValue = this._createNumberInput( count, `${twoLetterCount}-count` );
+        twoLetterTermEl.append( twoLetterValue );
+  
+        const lengthCountEl = document.createElement('span');
+        lengthCountEl.classList.add('length-counts');
+        twoLetterTermEl.append( lengthCountEl );
+  
+        list.append( twoLetterTermEl );
+      }
+  
+      this.twoLetterListContainer.replaceChildren( list );
+  
+      for (const firstLetter of this.state.lettersArray) {
+        this._showLetterCounts( firstLetter.toUpperCase() ); 
+      }
     }
   }
 
@@ -1223,6 +1241,11 @@ export class beeMain extends EventTarget {
     // find ranking
     let rank = null;
     for (const ranking of this.state.rankings) {
+      if (ranking.score === null) {
+        rank = this.state.rank
+        break;
+      }
+
       if (this.state.pointScore >= ranking.score) {
         rank = ranking.name;
       } else {
@@ -1516,6 +1539,17 @@ export class beeMain extends EventTarget {
   }
 
   /**
+   * Clears the current state and restarts the interface.
+   * @private
+   * @memberOf beeMain
+   */
+   async _resetState() {
+    this.state = JSON.parse(JSON.stringify(this.blankState));
+    this._saveState();
+    this._restoreState();
+  }
+
+  /**
    * Saves the game state to the browser local storage.
    * @private
    * @memberOf beeMain
@@ -1553,7 +1587,12 @@ export class beeMain extends EventTarget {
   
       // find and display the grid and two-letter lists
       this._createGrid();
-      this._createTwoLetterList();
+      if (this.state.twoLetterArray && this.state.twoLetterArray.length) {
+        this._createTwoLetterList();
+        this.twoLetterListsTab.checked = true;
+      } else {
+        this.discoveryOrderListTab.checked = true;
+      }
   
       this._restoreWordList();
     }

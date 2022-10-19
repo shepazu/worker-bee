@@ -1,0 +1,95 @@
+f a b d e l t
+
+WORDS: 58, POINTS: 256, PANGRAMS: 1 (1 Perfect), BINGO
+	4 	5 	6 	7 	8 	Σ
+a: 	- 	- 	- 	2 	- 	2
+b: 	1 	- 	4 	1 	- 	6
+d: 	3 	2 	1 	1 	4 	11
+e: 	- 	- 	1 	- 	- 	1
+f: 	16 	8 	4 	3 	2 	33
+l: 	2 	- 	1 	1 	- 	4
+t: 	- 	- 	- 	1 	- 	1
+Σ: 	22 	10 	11 	9 	6 	58
+
+Two letter list:
+
+af-1 al-1
+ba-2 be-4
+da-1 de-10
+ef-1
+fa-9 fe-16 fl-8
+le-4
+ta-1
+
+
+-----
+Beginner (0)
+Good Start (5)
+Moving Up (13)
+Good (20)
+Solid (38)
+Nice (64)
+Great (102)
+Amazing (128)
+Genius (179)
+
+-----
+
+affable
+alfalfa
+baffle
+baffled
+beef
+beefed
+befall
+befell
+daft
+deadfall
+deaf
+defat
+defatted
+defeat
+defeated
+deflate
+deflated
+deft
+delft
+effete
+fable
+fabled
+fade
+faded
+falafel
+fall
+fatal
+fate
+fated
+feat
+feeble
+feed
+feel
+feet
+fell
+fella
+fellate
+fellated
+felled
+felt
+feta
+fetal
+fete
+feted
+fettle
+flab
+flat
+flatbed
+flatfeet
+flea
+fled
+flee
+fleet
+leaf
+leafed
+leaflet
+left
+taffeta
