@@ -355,7 +355,8 @@ footer .button {
 }
 
 #share_links,
-#support_links {
+#support_links,
+#settings {
   display: flex;
   justify-content: space-around;
 }

@@ -7,3 +7,6 @@
 - [?] allow people to share / copy-paste status, wordlist, etc.
 - [?] congrats when reach bingo!, pangrams, etc.
 - [ ] card with point countdown to new rank
+- [ ] check for at least 4 letters in word
+- [ ] bug on remove word when no 2-letter list?
+- [ ] wipe previous UI when starting new session
