@@ -4,7 +4,49 @@ export class beeMain extends EventTarget {
   constructor() {
     super();
 
+    // this.state = {
+    //   sessionDate: null,
+    //   lettersArray: null,
+    //   totalWords: null,
+    //   totalPoints: null,
+    //   pangrams: 0,
+    //   perfectPangrams: 0,
+    //   gridTableArray: null,
+    //   twoLetterArray: null,
+    //   letterCountArray: null,
+    //   wordList: [],
+    //   times: {
+    //     start: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //     genius: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //     hints: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //     definitions: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //     queen_bee: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //     current: {
+    //       timestamp: null,
+    //       elapsed: null,
+    //     },
+    //   },
+    //   mode: 'hints',
+    // };
+
+
     this.state = {
+      sessionDate: null,
       lettersArray: null,
       priorLettersArray: null,
       statsArray: null,
@@ -124,7 +166,11 @@ export class beeMain extends EventTarget {
     this.shareButton = document.getElementById('share_button');
     this.askButton = document.getElementById('ask_button');
     this.resetButton = document.getElementById('reset_button');
-    this.notification = document.getElementById('notification');
+    // this.notification = document.getElementById('notification');
+    this.notificationsContainer = document.getElementById('notifications');
+
+    // this.historyButton = document.getElementById('history_button');
+    this.historySelector = document.getElementById('history_selector');
 
     this.milestoneDialog = document.getElementById('milestone-dialog');
     this.dialogClose = document.getElementById('dialog-close');
@@ -154,7 +200,7 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _init() {
+  async _init() {
     this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
     this.beeWordInput.addEventListener('change', this._addWord.bind(this));
@@ -163,6 +209,10 @@ export class beeMain extends EventTarget {
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
 
     // this.notification.addEventListener('animationend', () => this.notification.classList.remove('show') );
+    // this.notification.addEventListener('animationend', (event) => {
+    //   console.log('event.animationName', event.animationName);
+    // });
+    // this.notification.addEventListener('animationend', this._endMessage.bind(this) );
 
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
     this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
@@ -171,6 +221,15 @@ export class beeMain extends EventTarget {
 
     this.resetButton.addEventListener('click', this._resetState.bind(this));
 
+    // this.historyButton.addEventListener('click', this._reloadHistory.bind(this));
+    this.historySelector.addEventListener('change', this._loadPriorSession.bind(this));
+
+    this.state.sessionDate = await this._getDateCode();
+    // console.log('this.state.sessionDate', this.state.sessionDate);
+
+
+    this._listHistory();
+    // this._populateHistoryDropdown();
     // see if there's an existing state for today, and restore it if so
     this._restoreState();
   }
@@ -198,7 +257,7 @@ export class beeMain extends EventTarget {
 
       if (!hasLetters) {
         if (!this.state.lettersArray) {
-          this._showMessage('No list of letters found', 'warn');
+          this._queueMessage('No list of letters found', 'warn');
         }
       } else {
         // compare prior and current list of letters, irrespective of order
@@ -214,12 +273,13 @@ export class beeMain extends EventTarget {
         if (!this.state.priorLettersArray || !isSameLetters) {
           // TODO: decide when to invoke this
           // revert game state to default starting values
-          this.state = JSON.parse(JSON.stringify(this.blankState));
+          // const lettersArray = this.state.lettersArray.slice();
+          // this.state = JSON.parse(JSON.stringify(this.blankState));
 
           // start the clock
           this.state.times.start.timestamp = Date.now(); 
         }  else if (this.state.priorLettersArray && isSameLetters) {
-          this._showMessage('Welcome back', '');
+          this._queueMessage('Welcome back', '');
         }  
         // console.log('isSameLetters', isSameLetters);
 
@@ -652,7 +712,7 @@ export class beeMain extends EventTarget {
       this.state.twoLetterArray = twoLetterArray.map((str) => str.toUpperCase() );
       this._createTwoLetterList();
     }  else {
-      this._showMessage('No list of two letters found', 'warn');
+      this._queueMessage('No list of two letters found', 'warn');
     }
   }
 
@@ -797,21 +857,24 @@ export class beeMain extends EventTarget {
       for (let eachWord of wordArray) {
         eachWord = eachWord.toLowerCase();
 
-        if (!eachWord.includes(this.state.lettersArray[0])) {
+        // find length of word
+        const wordLength = eachWord.length;
+
+        if (wordLength < 4) {
           this.beeWordInput.classList.add('reject');
-          this._showMessage('Missing central letter');
+          this._queueMessage('Too short. Words must be at least 4 letters');
+        } else if (!eachWord.includes(this.state.lettersArray[0])) {
+          this.beeWordInput.classList.add('reject');
+          this._queueMessage('Missing central letter');
         } else {
-          // find length of word
-          const wordLength = eachWord.length;
-  
           // see if the word has already been entered
-          const prefoundWord = this.state.wordList.find(({ word }) => word === eachWord);
+          const isPrefoundWord = this.state.wordList.find(({ word }) => word === eachWord);
           if (this.state.mode === 'hints' && !this.state.letterCountArray.includes(wordLength)) {
             this.beeWordInput.classList.add('reject');
-            this._showMessage('Wrong number of letters');
-          } else if (prefoundWord) {
+            this._queueMessage('Wrong number of letters');
+          } else if (isPrefoundWord) {
             this.beeWordInput.classList.add('reject');
-            this._showMessage('Word already found');
+            this._queueMessage('Word already found');
           } else{    
             // find first letter
             const firstLetter = eachWord.substring(0, 1).toUpperCase();
@@ -826,10 +889,10 @@ export class beeMain extends EventTarget {
   
             if (this.state.mode === 'hints' && !twoLetterTerm) {
               this.beeWordInput.classList.add('reject');
-              this._showMessage('Doesn\'t match starting letters');
+              this._queueMessage('Doesn\'t match starting letters');
             } else if (!isCorrectLetters) {
               this.beeWordInput.classList.add('reject');
-              this._showMessage('Doesn\'t match letters');
+              this._queueMessage('Doesn\'t match letters');
             } else {
               // word seems to be a valid entry, modulo inclusion in the game dictionary,
               //  so insert it into the two-letter list
@@ -849,7 +912,7 @@ export class beeMain extends EventTarget {
               // this._showMessage('word added', '');
 
               // update word count
-              this.state.wordsFound = this.state.wordList.length;
+              // this.state.wordsFound = this.state.wordList.length;
               this._updateWordCount();
 
               // add word to discovery-order list
@@ -1005,15 +1068,16 @@ export class beeMain extends EventTarget {
     const wordLength = word.length;
     const twoLetterTerm = document.getElementById( twoLetterCode );
 
-
-    // decrement or increment the two-letter count
-    let countEl = twoLetterTerm.querySelector('input[type=number]');
-    const countValue = +countEl.value + modifier;
-    this._setNumberInputValue( countEl, countValue );
-    if (countValue === 0) {
-      this._toggleTwoLetterGroup( twoLetterCode );
-    } else if (countValue === 1 && !isDecrement) {
-      this._toggleTwoLetterGroup( twoLetterCode, false );
+    if (twoLetterTerm) {
+      // decrement or increment the two-letter count
+      let countEl = twoLetterTerm.querySelector('input[type=number]');
+      const countValue = +countEl.value + modifier;
+      this._setNumberInputValue( countEl, countValue );
+      if (countValue === 0) {
+        this._toggleTwoLetterGroup( twoLetterCode );
+      } else if (countValue === 1 && !isDecrement) {
+        this._toggleTwoLetterGroup( twoLetterCode, false );
+      }
     }
 
     // decrement or increment the word-grid count
@@ -1029,21 +1093,27 @@ export class beeMain extends EventTarget {
     // if (gridRowTotalCountEl) {
     //   this._setNumberInputValue( gridRowTotalCountEl, (+gridRowTotalCountEl.value + modifier) );
     // }
-    gridRowTotalCountEl.replaceChildren( (+gridRowTotalCountEl.textContent + modifier) );
+    if (gridRowTotalCountEl) {
+      gridRowTotalCountEl.replaceChildren( (+gridRowTotalCountEl.textContent + modifier) );
+    }
 
 
     // decrement or increment the word-grid word-length total count
     let gridWordLengthTotalEl = document.getElementById(`Σ-${wordLength}`);
-    gridWordLengthTotalEl.replaceChildren( (+gridWordLengthTotalEl.textContent + modifier) );
+    if (gridWordLengthTotalEl) {
+      gridWordLengthTotalEl.replaceChildren( (+gridWordLengthTotalEl.textContent + modifier) );
+    }
 
     // decrement or increment the word-grid total word count
     let gridWordTotalEl = document.getElementById(`Σ-Σ`);
-    const totalWordsLeft = +gridWordTotalEl.textContent + modifier;
-    gridWordTotalEl.replaceChildren( totalWordsLeft );
-
-    if (totalWordsLeft === 0) {
-      // note time queen bee is reached
-      // this.state.times.queen_bee.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+    if (gridWordTotalEl) {
+      const totalWordsLeft = +gridWordTotalEl.textContent + modifier;
+      gridWordTotalEl.replaceChildren( totalWordsLeft );
+  
+      // if (totalWordsLeft === 0) {
+      //   // note time queen bee is reached
+      //   // this.state.times.queen_bee.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+      // }
     }
 
   
@@ -1086,7 +1156,9 @@ export class beeMain extends EventTarget {
         if (el.value > 0) {
           binCount = bin;
           if (el.value > 1) {
-            binCount = `${el.value} ${bin}s`
+            // binCount = `${el.value} ${bin}s`
+            // binCount = `${bin} [${el.value}]`
+            binCount = `${bin}x${el.value}`
           }
           letterBinCounts.push(binCount);
         }
@@ -1103,13 +1175,13 @@ export class beeMain extends EventTarget {
       const input = el.parentNode.querySelector('input');
       return (input.value > 0);
     });
-    
-    if (activeTwoLetterLists.length > 1) {
-      letterBinTotals = `?: ${letterBinTotals}`;
-    }
 
     for (const entry of activeTwoLetterLists) {
       entry.textContent = letterBinTotals;
+    
+      if (activeTwoLetterLists.length > 1) {
+        entry.classList.add('uncertain');
+      }
     }
   }
 
@@ -1126,7 +1198,9 @@ export class beeMain extends EventTarget {
     twoLetterEls.forEach( (el) => {
       if (isDim) {
         el.classList.add('dim');
-        this._showMessage(`All ${twoLetterCode} words found!`, '');
+        if (el.localName === 'dt') {
+          this._queueMessage(`All ${twoLetterCode} words found!`, '');
+        }
       } else {
         el.classList.remove('dim');
       }
@@ -1180,7 +1254,7 @@ export class beeMain extends EventTarget {
     }
 
     if (this.state.isBingo) {
-      this._showMessage('Bingo!', '');
+      this._queueMessage('Bingo!', '');
       if (this.bingoStatEl) {
         this.bingoStatEl.replaceChildren('!');
       }
@@ -1211,7 +1285,7 @@ export class beeMain extends EventTarget {
     }
     this.state.pointScore += points;
 
-    let message = `${points} point${(points > 1)? 's' : ''}`;
+    let message = `${points} point${(points > 1 || points < -1)? 's' : ''}`;
     if (isPangram) {
       this.state.pointScore += (pangramBonusPoints * modifier);
       message = `Pangram! ${points} points, plus ${pangramBonusPoints} bonus points!`;
@@ -1222,7 +1296,7 @@ export class beeMain extends EventTarget {
       this.pointStatEl.replaceChildren(this.state.pointScore);
     }
 
-    this._showMessage(message, '');
+    this._queueMessage(message, '');
 
     if (this.state.mode === 'hints') {
       this._updateRank();
@@ -1277,6 +1351,7 @@ export class beeMain extends EventTarget {
    */
   _updateWordCount( isIncrement = true ) {
     const modifier = isIncrement ? 1 : -1;
+    this.state.wordsFound = this.state.wordList.length;
     if (this.wordCountStatEl) {
       this.wordCountStatEl.replaceChildren( this.state.wordsFound );
     }
@@ -1305,16 +1380,22 @@ export class beeMain extends EventTarget {
     const targetWord = target.parentNode.id.split('-')[0];
     // update two-letter term and grid numbers
     this._updateGridCountsByWord( targetWord, false );
-    const isPangram = this._checkPangram( targetWord, false );
-    this._updateScore( targetWord.length, isPangram, false );
 
     const twoLetterEntry = document.getElementById(`${targetWord}-two-letters-word`); 
-    twoLetterEntry.remove();
+    if (twoLetterEntry) {
+      twoLetterEntry.remove();
+    }
     const discoveryEntry = document.getElementById(`${targetWord}-discovery-word`); 
-    discoveryEntry.remove();
+    if (discoveryEntry) {
+      discoveryEntry.remove();
+    }
 
     const wordIndex = this.state.wordList.findIndex(({ word }) => word === targetWord);
     this.state.wordList.splice( wordIndex, 1 );
+    this._updateWordCount();
+
+    const isPangram = this._checkPangram( targetWord, false );
+    this._updateScore( targetWord.length, isPangram, false );
   }
 
   /**
@@ -1379,45 +1460,96 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _showMessage( message, codeType) {
+  _queueMessage( message, codeType) {
     console.warn(message, codeType);
 
     // Add the 'show' class to notification
-    this.notification.textContent = message;
-    this.notification.classList.add('show');
+    // this.notification.textContent = message;
+    // this.notification.classList.add('show');
 
     // After 3 seconds, remove the show class from DIV
     // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
-    setTimeout(() => { 
-      this.notification.classList.remove('show');
-    }, 3000);
+    // setTimeout(() => { 
+    //   this.notification.classList.remove('show');
+    // }, 3000);
 
-    // this.messageQueue.push(message);
-    // this._displayMessage();
+    this.messageQueue.push(message);
+    // console.log('_queueMessage.messageQueue', JSON.stringify(this.messageQueue));
+
+    this._displayMessage();
   }
 
 
   /**
-   * Displays milestone dialog.
+   * .
+   * @private
+   * @memberOf beeMain
+   */
+  _endMessage(event) {
+    const target = event.target;
+    console.log('event.animationName', event.animationName);
+    // if (event.animationName === 'fadeout') {
+    if (event.animationName === 'fade-remove') {
+      // console.log('_endMessage.messageQueue', this.messageQueue);
+      // console.log('_endMessage.messageQueue', JSON.stringify(this.messageQueue));
+      // this.notification.classList.remove('show');
+
+      target.remove();
+      this._displayMessage();
+    }
+  }
+
+
+  /**
+   * Steps through message queue.
    * @private
    * @memberOf beeMain
    */
   _displayMessage() {
-    if (!this.notification.classList.contains('show')) {
-      const message = this.messageQueue.shift();
+    // console.log('_displayMessage.messageQueue', JSON.stringify(this.messageQueue));
+    // if (!this.notification.classList.contains('show') && this.messageQueue.length) {
+    // if (!this.notificationsContainer.children.length && this.messageQueue.length) {
+    if ( this.messageQueue.length) {
+      // const message = this.messageQueue.shift();
+      const message = this.messageQueue.pop();
+      // const message = this.messageQueue.join(' ');
+      // this.messageQueue = [];
+      console.log('message', message);
 
+      const notification = document.createElement('li');
+      notification.classList.add('notification');
+      notification.textContent = message;
+      notification.addEventListener('animationend', this._endMessage.bind(this) );
+      this.notificationsContainer.append(notification);
+
+      // this.notification.textContent = message;
       // Add the 'show' class to notification
-      this.notification.textContent = message;
-      this.notification.classList.add('show');
-  
-      // After 3 seconds, remove the show class from DIV
-      // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
-      setTimeout(() => { 
-        this.notification.classList.remove('show');
-        this._displayMessage().bind(this);
-      }, 3000);
+      // this.notification.classList.add('show');
     }
   }
+
+
+  // /**
+  //  * Steps through message queue.
+  //  * @private
+  //  * @memberOf beeMain
+  //  */
+  // _displayMessage() {
+  //   if (!this.notification.classList.contains('show')) {
+  //     const message = this.messageQueue.shift();
+
+  //     // Add the 'show' class to notification
+  //     this.notification.textContent = message;
+  //     this.notification.classList.add('show');
+  
+  //     // After 3 seconds, remove the show class from DIV
+  //     // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
+  //     setTimeout(() => { 
+  //       this.notification.classList.remove('show');
+  //       this._displayMessage().bind(this);
+  //     }, 3000);
+  //   }
+  // }
 
 
   /**
@@ -1456,7 +1588,7 @@ export class beeMain extends EventTarget {
         this.milestoneDialog.showModal();
       }
     } else {
-      this._showMessage('Dialog API not supported by this browser');
+      this._queueMessage('Dialog API not supported by this browser');
     }
   }
 
@@ -1504,17 +1636,17 @@ export class beeMain extends EventTarget {
 
       if (navigator.share) {
         await navigator.share(shareData);
-        this._showMessage('Status shared successfully', '');
+        this._queueMessage('Status shared successfully', '');
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(shareData.text)
           .then(() => {
-            this._showMessage('Status copied to clipboard');
+            this._queueMessage('Status copied to clipboard');
           })
           .catch(err => {
-            this._showMessage('Error in copying text: ', err);
+            this._queueMessage('Error in copying text: ', err);
           });
       } else {
-        this._showMessage('Can\' share content!', 'warn');
+        this._queueMessage('Can\' share content!', 'warn');
       }
     } catch (err) {
       console.error(`Error: ${err}`);
@@ -1527,9 +1659,7 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    * @return {string} The date in YYYY-MM-DD format.
    */
-  _getDateCode() {
-    // const date = Date.now();
-    // const date = Date.now();
+  async _getDateCode() {
     const date = new Date(Date.now());
     const day = date.getDate();
     const month = date.getMonth() + 1; // getMonth() returns month from 0 to 11
@@ -1545,29 +1675,41 @@ export class beeMain extends EventTarget {
    */
    async _resetState() {
     this.state = JSON.parse(JSON.stringify(this.blankState));
-    this._saveState();
+    const dateCode = await this._getDateCode();
+    this.state.sessionDate = dateCode;
+    this._saveState(dateCode);
     this._restoreState();
   }
 
   /**
    * Saves the game state to the browser local storage.
+   * @param {string} dateCode The date to be saved.
    * @private
    * @memberOf beeMain
    */
-  async _saveState() {
-    const saveStateString = JSON.stringify(this.state);
-    const dateCode = this._getDateCode();
-    localStorage.setItem(`workerBeeSaveState-${dateCode}`, saveStateString);
+  async _saveState(dateCode) {
+    dateCode = dateCode || this.state.sessionDate;
+    if (dateCode) {
+      const saveStateString = JSON.stringify(this.state);
+      console.log('saveState key', `workerBeeSaveState-${dateCode}`);
+      // const dateCode = this._getDateCode();
+      localStorage.setItem(`workerBeeSaveState-${dateCode}`, saveStateString);
+      // localStorage.setItem(`workerBeeSaveState-${dateCode}-test`, saveStateString);
+    } else {
+      console.error('_saveState error');
+    }
   }
 
   /**
    * Restores the game state from the browser local storage.
+   * @param {string} dateCode The date to be loaded.
    * @private
    * @memberOf beeMain
    */
-  async _restoreState() {
-    const dateCode = this._getDateCode();
+  async _restoreState(dateCode) {
+    dateCode = dateCode || this.state.sessionDate;
     const restoredState = localStorage.getItem(`workerBeeSaveState-${dateCode}`);
+    // const restoredState = localStorage.getItem(`workerBeeSaveState-${dateCode}-test`);
     if (restoredState) {
       const restoredStateJSON = JSON.parse(restoredState);
       // console.log('_restoreState', restoredStateJSON);
@@ -1595,6 +1737,48 @@ export class beeMain extends EventTarget {
       }
   
       this._restoreWordList();
+    }
+  }
+
+  /**
+   * Restores the game state from a previous day.
+   * @param {Event} event The event on the element.
+   * @private
+   * @memberOf beeMain
+   */
+  async _loadPriorSession(event) {
+    const target = event.target;
+    // get yesterday's date
+    // const dateCode = this._getDateCode( 1 );
+    const dateCode = target.value;
+    this._restoreState(dateCode);
+  }
+
+  /**
+   * Lists game play history.
+   * @private
+   * @memberOf beeMain
+   */
+  async _listHistory() {
+    // const history = { ...localStorage };
+    
+    const storedKeys = Object.keys(localStorage);
+    storedKeys.sort( (a, b) => a > b ? -1 : 1 );
+    // console.log('storedKeys', storedKeys);
+    for (const key of storedKeys) {
+      if (key.includes('workerBeeSaveState')) {
+        const dateCode = key.replace('workerBeeSaveState-', '');
+
+        // if (dateCode === 'null' || dateCode === 'undefined') {
+        //   console.error('_listHistory error');
+        //   localStorage.removeItem(key);
+        // }
+        
+        let option = document.createElement('option');
+        option.setAttribute('value', dateCode);
+        option.textContent = dateCode;
+        this.historySelector.append(option);
+      }
     }
   }
 }

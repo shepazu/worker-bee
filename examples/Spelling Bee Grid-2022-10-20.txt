@@ -1,0 +1,72 @@
+l a c e j k p
+
+WORDS: 37, POINTS: 132, PANGRAMS: 1
+	4 	5 	6 	8 	9 	Σ
+a: 	- 	2 	4 	1 	1 	8
+c: 	3 	2 	1 	- 	- 	6
+j: 	1 	- 	1 	- 	- 	2
+k: 	3 	- 	- 	- 	- 	3
+l: 	6 	1 	- 	- 	- 	7
+p: 	6 	2 	3 	- 	- 	11
+Σ: 	19 	7 	9 	1 	1 	37
+
+Two letter list:
+
+al-3 ap-5
+ca-3 ce-1 cl-2
+ja-1 je-1
+ka-1 ke-2
+la-4 le-3
+pa-7 pe-2 pl-2 
+
+-----
+Beginner (0)
+Good Start (3)
+Moving Up (7)
+Good (11)
+Solid (20)
+Nice (33)
+Great (53)
+Amazing (66)
+Genius (92)
+Queen Bee (132)
+
+-----
+
+alack
+allele
+alpaca
+appall
+appeal
+appellee
+apple
+applejack
+cackle
+call
+calla
+cell
+clack
+clap
+jackal
+jell
+kale
+keel
+kelp
+lace
+lack
+lake
+lapel
+leak
+leap
+leek
+paella
+palace
+palapa
+pale
+pall
+palp
+papal
+peal
+peel
+place
+plea
