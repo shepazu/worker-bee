@@ -1708,9 +1708,14 @@ export class beeMain extends EventTarget {
     
     const storedKeys = Object.keys(localStorage);
     storedKeys.sort( (a, b) => a > b ? -1 : 1 );
-    // console.log('storedKeys', storedKeys);
+    console.log('storedKeys', storedKeys);
+
+    if (!storedKeys.length) {
+      storedKeys.push('no history');
+    }
+
     for (const key of storedKeys) {
-      if (key.includes('workerBeeSaveState')) {
+      if (key.includes('workerBeeSaveState') || key === 'no history') {
         const dateCode = key.replace('workerBeeSaveState-', '');
 
         // if (dateCode === 'null' || dateCode === 'undefined') {

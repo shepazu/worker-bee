@@ -223,6 +223,7 @@ table {
   border-collapse: collapse;
   margin-bottom: 1rem;
   background-color: var(--table_background);
+  width: calc(100vw - 1rem);
 }
 
 thead > tr {
@@ -236,10 +237,9 @@ thead > tr {
 
 table td,
 table th {
-  padding: 0;
   border: var(--table_color) 1px solid;
   font-size: 16px;
-  padding: 0.15rem 0.3rem;
+  padding: 0.15rem 0rem;
 }
 
 tbody input[type=number],
@@ -275,7 +275,7 @@ tbody th {
 tbody input[type=number],
 #two-letter-lists input[type=number] {
   font-size: 16px;
-  max-width: 3em;
+  max-width: 2.2em;
   border: none;
   background-color: var(--table_background);
   text-align: center;
@@ -596,6 +596,21 @@ li.notification {
     column-count: 3;
     column-gap: 3rem;
   }
+
+  table {
+    width: 75vw;
+  }
+
+  table td,
+  table th {
+    padding: 0.15rem 0.3rem;
+  }
+
+  tbody input[type=number],
+  #two-letter-lists input[type=number] {
+    max-width: 3em;
+  }
+
 }
 
 /* Large devices (laptops/desktops, 992px and up) */
@@ -619,6 +634,21 @@ li.notification {
     column-count: 4;
     column-gap: 4rem;
   }
+
+  table {
+    width: 50vw;
+  }
+
+  table td,
+  table th {
+    padding: 0.15rem 0.3rem;
+  }
+
+  tbody input[type=number],
+  #two-letter-lists input[type=number] {
+    max-width: 3em;
+  }
+
 /* 
   button[type=remove] {
     opacity: 0;
