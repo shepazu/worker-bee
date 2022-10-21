@@ -166,10 +166,8 @@ export class beeMain extends EventTarget {
     this.shareButton = document.getElementById('share_button');
     this.askButton = document.getElementById('ask_button');
     this.resetButton = document.getElementById('reset_button');
-    // this.notification = document.getElementById('notification');
     this.notificationsContainer = document.getElementById('notifications');
 
-    // this.historyButton = document.getElementById('history_button');
     this.historySelector = document.getElementById('history_selector');
 
     this.milestoneDialog = document.getElementById('milestone-dialog');
@@ -208,12 +206,6 @@ export class beeMain extends EventTarget {
     this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
 
-    // this.notification.addEventListener('animationend', () => this.notification.classList.remove('show') );
-    // this.notification.addEventListener('animationend', (event) => {
-    //   console.log('event.animationName', event.animationName);
-    // });
-    // this.notification.addEventListener('animationend', this._endMessage.bind(this) );
-
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
     this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
 
@@ -221,7 +213,6 @@ export class beeMain extends EventTarget {
 
     this.resetButton.addEventListener('click', this._resetState.bind(this));
 
-    // this.historyButton.addEventListener('click', this._reloadHistory.bind(this));
     this.historySelector.addEventListener('change', this._loadPriorSession.bind(this));
 
     this.state.sessionDate = await this._getDateCode();
@@ -1461,18 +1452,6 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _queueMessage( message, codeType) {
-    console.warn(message, codeType);
-
-    // Add the 'show' class to notification
-    // this.notification.textContent = message;
-    // this.notification.classList.add('show');
-
-    // After 3 seconds, remove the show class from DIV
-    // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
-    // setTimeout(() => { 
-    //   this.notification.classList.remove('show');
-    // }, 3000);
-
     this.messageQueue.push(message);
     // console.log('_queueMessage.messageQueue', JSON.stringify(this.messageQueue));
 
@@ -1488,12 +1467,7 @@ export class beeMain extends EventTarget {
   _endMessage(event) {
     const target = event.target;
     console.log('event.animationName', event.animationName);
-    // if (event.animationName === 'fadeout') {
     if (event.animationName === 'fade-remove') {
-      // console.log('_endMessage.messageQueue', this.messageQueue);
-      // console.log('_endMessage.messageQueue', JSON.stringify(this.messageQueue));
-      // this.notification.classList.remove('show');
-
       target.remove();
       this._displayMessage();
     }
@@ -1506,9 +1480,7 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _displayMessage() {
-    // console.log('_displayMessage.messageQueue', JSON.stringify(this.messageQueue));
-    // if (!this.notification.classList.contains('show') && this.messageQueue.length) {
-    // if (!this.notificationsContainer.children.length && this.messageQueue.length) {
+
     if ( this.messageQueue.length) {
       // const message = this.messageQueue.shift();
       const message = this.messageQueue.pop();
@@ -1521,36 +1493,8 @@ export class beeMain extends EventTarget {
       notification.textContent = message;
       notification.addEventListener('animationend', this._endMessage.bind(this) );
       this.notificationsContainer.append(notification);
-
-      // this.notification.textContent = message;
-      // Add the 'show' class to notification
-      // this.notification.classList.add('show');
     }
   }
-
-
-  // /**
-  //  * Steps through message queue.
-  //  * @private
-  //  * @memberOf beeMain
-  //  */
-  // _displayMessage() {
-  //   if (!this.notification.classList.contains('show')) {
-  //     const message = this.messageQueue.shift();
-
-  //     // Add the 'show' class to notification
-  //     this.notification.textContent = message;
-  //     this.notification.classList.add('show');
-  
-  //     // After 3 seconds, remove the show class from DIV
-  //     // setTimeout(() => { this.notification.className = this.notification.className.replace('show', ''); }, 3000);
-  //     setTimeout(() => { 
-  //       this.notification.classList.remove('show');
-  //       this._displayMessage().bind(this);
-  //     }, 3000);
-  //   }
-  // }
-
 
   /**
    * Displays milestone dialog.
