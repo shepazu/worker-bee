@@ -1,0 +1,63 @@
+m a c i n t y
+
+WORDS: 31, POINTS: 134, PANGRAMS: 1
+	4 	5 	6 	7 	8 	Σ
+a: 	- 	2 	- 	- 	- 	2
+c: 	1 	- 	2 	1 	- 	4
+i: 	1 	- 	- 	- 	1 	2
+m: 	9 	8 	3 	1 	1 	22
+t: 	- 	- 	1 	- 	- 	1
+Σ: 	11 	10 	6 	2 	2 	31
+
+Two letter list:
+
+am-1 an-1
+ca-4
+im-1 in-1
+ma-11 mi-10 my-1
+ta-1 
+
+-----
+Beginner (0)
+Good Start (3)
+Moving Up (7)
+Good (11)
+Solid (20)
+Nice (34)
+Great (54)
+Amazing (67)
+Genius (94)
+
+-----
+
+amity
+anima
+caiman
+cami
+catmint
+cayman
+imam
+intimacy
+maim
+main
+maintain
+mama
+mamma
+mania
+maniac
+manic
+manna
+manta
+many
+mica
+mimic
+mini
+minicam
+minim
+minima
+mint
+minty
+minyan
+mitt
+myna
+tatami

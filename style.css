@@ -45,7 +45,7 @@ main {
 
 h1 {
   font-family: HoneycombHappiness, Verdana, Arial, sans-serif; 
-  font-size: rem;
+  font-size: 1.5rem;
   color: var(--heading_text);
   margin: 0;
   padding: 0;
@@ -121,9 +121,14 @@ textarea {
 }
 
 textarea, 
-input {
+input,
+select {
   background-color: var(--table_background);
   border: 1px solid var(--table_color);
+}
+
+select {
+  font-size: 16px;
 }
 
 #add-word-block {
@@ -134,6 +139,11 @@ input {
 #add-word-block.hidden {
   display: none;
 }
+
+#add-word-block button {
+  margin-left: 0.3rem;
+}
+
 
 
 details summary {
@@ -305,6 +315,10 @@ time {
   color: var(--bin_text);
   padding-left: 0.8rem;
   font-size: 0.8rem;
+}
+
+.uncertain {
+  font-style: italic;
 }
 
 #two-letter-lists dl, 
@@ -512,41 +526,62 @@ dialog section {
 
 /* Notification toast */
  /* The notification - position it at the top and in the middle of the screen */
- #notification {
-  visibility: hidden; 
-  background-color: var(--notification_color);
-  color: var(--table_header_text);
-  text-align: center; /* Centered text */
-  border-radius: 2px; /* Rounded borders */
-  padding: 16px; /* Padding */
-  position: fixed; /* Sit on top of the screen */
+ul#notifications {
+  position: absolute;
+  top: 2rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
   z-index: 1; 
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
 
-  /* replace this with flexbox? */
-  min-width: 250px; /* Set a default minimum width */
-  margin-left: -125px; /* Divide value of min-width by 2 */
-  left: 50%; /* Center the notification */
-  top: 30px; /* 30px from the bottom */
-}
-
-#notification.show {
-  visibility: visible;
-  /* Add animation: Take 0.5 seconds to fade in and out the notification.
-  Delay the fade out process for 2.5 seconds */
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-/* Animations to fade the notification in and out */
-@keyframes fadein {
-  from {top: 0; opacity: 0;}
-  to {top: 30px; opacity: 1;}
-}
-
-@keyframes fadeout {
-  from {top: 30px; opacity: 1;}
-  to {top: 0; opacity: 0;}
+  /* background-color: hsl(0, 100%, 90%, 0.8); */
+  /* display: none; */
 } 
 
+li.notification {
+  background-color: var(--notification_color);
+  color: var(--table_header_text);
+  text-align: center;
+  border-radius: 2px; 
+  padding: 0.8rem; 
+  min-width: 12rem; 
+}
+
+li.notification {
+	transform-origin: 50% 0;
+	animation: append-animate 0.3s linear, fade-remove 0.3s 2.5s;
+}
+
+@keyframes append-animate {
+	from {
+		transform: scaleY(0);
+		opacity: 0;
+	}
+	to {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
+@keyframes fade-remove {
+	from {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+	to {
+		transform: scaleY(0);
+		opacity: 0;
+	}
+}
+
+/* different devices and screen sizes */
 /* Extra small devices (phones, 600px and down) */
 /* @media only screen and (max-width: 600px) { } */
 
@@ -584,14 +619,15 @@ dialog section {
     column-count: 4;
     column-gap: 4rem;
   }
-
+/* 
   button[type=remove] {
     opacity: 0;
   }
 
   button[type=remove]:hover {
     opacity: 1;
-  }
+  } 
+  */
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */

@@ -1,0 +1,95 @@
+v c d e i n o
+
+WORDS: 59, POINTS: 381, PANGRAMS: 5, BINGO
+	4 	5 	6 	7 	8 	9 	11 	13 	14 	Σ
+c: 	1 	2 	- 	2 	4 	2 	1 	- 	- 	12
+d: 	2 	1 	5 	4 	3 	- 	- 	- 	- 	15
+e: 	1 	- 	4 	1 	1 	1 	- 	- 	- 	8
+i: 	- 	1 	- 	1 	1 	- 	- 	1 	1 	5
+n: 	- 	- 	1 	- 	- 	- 	- 	- 	- 	1
+o: 	1 	2 	- 	- 	- 	- 	- 	- 	- 	3
+v: 	6 	3 	5 	1 	- 	- 	- 	- 	- 	15
+Σ: 	11 	9 	15 	9 	9 	3 	1 	1 	1 	59
+
+Two letter list:
+
+ci-1 co-11
+de-6 di-8 do-1
+en-2 ev-6
+in-4 iv-1
+no-1
+ov-3
+ve-4 vi-6 vo-5 
+
+-----
+Beginner (0)
+Good Start (8)
+Moving Up (19)
+Good (30)
+Solid (57)
+Nice (95)
+Great (152)
+Amazing (191)
+Genius (267)
+
+-----
+
+civic
+conceive
+conceived
+connive
+connived
+convene
+convened
+convenience
+convince
+convinced
+cove
+coven
+deceive
+deceived
+devein
+deveined
+device
+devoid
+dive
+dived
+divide
+divided
+dividend
+divine
+divined
+divvied
+dove
+endive
+envied
+even
+evened
+evidence
+evidenced
+evince
+evinced
+inconvenience
+inconvenienced
+invoice
+invoiced
+ivied
+novice
+oven
+ovine
+ovoid
+vein
+veined
+vend
+vended
+vice
+video
+videoed
+vied
+vine
+vivid
+voice
+voiced
+void
+voided
+voodoo
