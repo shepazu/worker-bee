@@ -180,8 +180,7 @@ details section p {
 
 #stats-block {
   display: flex;
-  justify-content: flex-start;
-  gap: 2rem;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
@@ -597,6 +596,11 @@ li.notification {
     column-gap: 3rem;
   }
 
+  #stats-block {
+    justify-content: flex-start;
+    gap: 2rem;
+  }
+
   table {
     width: 75vw;
   }
@@ -633,6 +637,11 @@ li.notification {
   #discovery-order-list ol {
     column-count: 4;
     column-gap: 4rem;
+  }
+
+  #stats-block {
+    justify-content: flex-start;
+    gap: 2rem;
   }
 
   table {
