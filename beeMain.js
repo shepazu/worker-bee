@@ -189,7 +189,9 @@ export class beeMain extends EventTarget {
     this.pangramStatEl = null;
     this.perfectPangramStatEl = null;
     this.bingoStatEl = null;
-
+    this.nextRankPoints = null;
+    this.nextRankTitle = null;
+    
     this._init();
   }
   
@@ -498,6 +500,30 @@ export class beeMain extends EventTarget {
       if (this.rankStatEl) {
         this.rankStatEl.replaceChildren( this.state.rankings[0].name );
       }
+
+      // create 'points to next rank' card
+      this._createStatCard( 'next rank', 
+        [
+          {
+            title: 'next-rank-points',
+            value: this.state.totalPoints,
+            current: this.state.pointScore,
+          },
+          {
+            title: 'next-rank',
+            value: this.state.rank,
+            current: this.state.rank,
+          },
+        ]
+      );
+
+      this.nextRankPoints = document.getElementById('next-rank-points-current');
+      this.nextRankPoints.parentNode.replaceChildren(this.nextRankPoints);
+
+      this.nextRankTitle = document.getElementById('next-rank-current');
+      this.nextRankTitle.parentNode.replaceChildren(this.nextRankTitle);
+
+      this._updateRank();
     }
   }
 
@@ -1276,7 +1302,7 @@ export class beeMain extends EventTarget {
     }
     this.state.pointScore += points;
 
-    let message = `${points} point${(points > 1 || points < -1)? 's' : ''}`;
+    let message = `${points} point${(points === 1 || points === -1)? '' : 's'}`;
     if (isPangram) {
       this.state.pointScore += (pangramBonusPoints * modifier);
       message = `Pangram! ${points} points, plus ${pangramBonusPoints} bonus points!`;
@@ -1304,8 +1330,13 @@ export class beeMain extends EventTarget {
    */
   _updateRank() {
     // find ranking
+    let oldRank = this.state.rank;
     let rank = null;
-    for (const ranking of this.state.rankings) {
+    let nextRank = null;
+    let nextRankScore = 0;
+    // for (const ranking of this.state.rankings) {
+    for (let rankIndex = 0; rankIndex < this.state.rankings.length; rankIndex++) {
+      const ranking = this.state.rankings[rankIndex];
       if (ranking.score === null) {
         rank = this.state.rank
         break;
@@ -1313,6 +1344,11 @@ export class beeMain extends EventTarget {
 
       if (this.state.pointScore >= ranking.score) {
         rank = ranking.name;
+        const next = this.state.rankings[rankIndex + 1];
+        if (next) {
+          nextRank = next.name;
+          nextRankScore = next.score;
+        }
       } else {
         break;
       }
@@ -1323,11 +1359,24 @@ export class beeMain extends EventTarget {
       this.rankStatEl.replaceChildren( this.state.rank );
     }
   
+    if (nextRank) {
+      const nextPoints = nextRankScore - this.state.pointScore;
+      this.nextRankPoints.replaceChildren(`${nextPoints} point${(nextPoints === 1 || nextPoints === -1)? '' : 's'}`);
+      this.nextRankTitle.replaceChildren(`to ${nextRank}`);
+    }
+
+    if (this.state.rank !== oldRank) {
+      this._queueMessage(`New rank: ${this.state.rank}!`, '');
+
+    }
+  
     if (this.state.rank === 'Genius') {
       this.state.times.genius.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
       // this._displayMilestone(); 
     } else if (this.state.rank === 'Queen Bee') {
-      this.state.times.queen_bee.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+      this.state.times.queen_bee.timestamp =  Date.now(); 
+      this.nextRankPoints.replaceChildren('You win!');
+      this.nextRankTitle.replaceChildren('');
       this._displayMilestone(); 
     }
   }
@@ -1466,7 +1515,7 @@ export class beeMain extends EventTarget {
    */
   _endMessage(event) {
     const target = event.target;
-    console.log('event.animationName', event.animationName);
+    // console.log('event.animationName', event.animationName);
     if (event.animationName === 'fade-remove') {
       target.remove();
       this._displayMessage();
@@ -1486,7 +1535,6 @@ export class beeMain extends EventTarget {
       const message = this.messageQueue.pop();
       // const message = this.messageQueue.join(' ');
       // this.messageQueue = [];
-      console.log('message', message);
 
       const notification = document.createElement('li');
       notification.classList.add('notification');
@@ -1590,7 +1638,7 @@ export class beeMain extends EventTarget {
             this._queueMessage('Error in copying text: ', err);
           });
       } else {
-        this._queueMessage('Can\' share content!', 'warn');
+        this._queueMessage('Can\'t share content!', 'warn');
       }
     } catch (err) {
       console.error(`Error: ${err}`);
@@ -1635,7 +1683,7 @@ export class beeMain extends EventTarget {
     dateCode = dateCode || this.state.sessionDate;
     if (dateCode) {
       const saveStateString = JSON.stringify(this.state);
-      console.log('saveState key', `workerBeeSaveState-${dateCode}`);
+      // console.log('saveState key', `workerBeeSaveState-${dateCode}`);
       // const dateCode = this._getDateCode();
       localStorage.setItem(`workerBeeSaveState-${dateCode}`, saveStateString);
       // localStorage.setItem(`workerBeeSaveState-${dateCode}-test`, saveStateString);
@@ -1708,7 +1756,7 @@ export class beeMain extends EventTarget {
     
     const storedKeys = Object.keys(localStorage);
     storedKeys.sort( (a, b) => a > b ? -1 : 1 );
-    console.log('storedKeys', storedKeys);
+    // console.log('storedKeys', storedKeys);
 
     if (!storedKeys.length) {
       storedKeys.push('no history');
