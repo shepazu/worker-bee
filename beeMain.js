@@ -209,6 +209,8 @@ export class beeMain extends EventTarget {
     this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
 
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
+    this.askButton.addEventListener('click', this._shareStatus.bind(this));
+
     this.dialogClose.addEventListener('click', this._closeDialog.bind(this) );
 
     this.dialogShareButton.addEventListener('click', this._shareStatus.bind(this));
@@ -219,7 +221,6 @@ export class beeMain extends EventTarget {
 
     this.state.sessionDate = await this._getDateCode();
     // console.log('this.state.sessionDate', this.state.sessionDate);
-
 
     this._listHistory();
     // this._populateHistoryDropdown();
@@ -270,7 +271,8 @@ export class beeMain extends EventTarget {
           // this.state = JSON.parse(JSON.stringify(this.blankState));
 
           // start the clock
-          this.state.times.start.timestamp = Date.now(); 
+          this.state.times.start.timestamp = Date.now();
+          console.log('new game', this.state.times.start.timestamp);
         }  else if (this.state.priorLettersArray && isSameLetters) {
           this._queueMessage('Welcome back', '');
         }  
@@ -353,6 +355,25 @@ export class beeMain extends EventTarget {
       this.lettersBlockContainer.replaceChildren('');
       this.state.lettersArray = letterList[0].split(/\s/);
 
+      this._showLetterList();
+
+      return true;
+    } else {
+      // check for inputting letters one at a time
+      letterList = this.hintText.match(/\w/);
+      this.state.lettersArray = letterList[0].split(/[\s,]/);
+
+      return false;
+    }
+  }
+
+  /**
+   * Finds list of letters.
+   * @private
+   * @memberOf beeMain
+   */
+  _showLetterList() {
+    if (this.state.lettersArray && this.state.lettersArray.length === 7) {
       for (let letterIndex = 0; letterIndex < this.state.lettersArray.length; letterIndex++) {
         const letter = this.state.lettersArray[letterIndex].toLowerCase();
         this.state.lettersArray[letterIndex] = letter;
@@ -365,16 +386,6 @@ export class beeMain extends EventTarget {
         letterButton.addEventListener('click', this._addLetter.bind(this) );
         this.lettersBlockContainer.append( letterButton );
       }
-
-      // this.state.times.start.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
-
-      return true;
-    } else {
-      // check for inputting letters one at a time
-      letterList = this.hintText.match(/\w/);
-      this.state.lettersArray = letterList[0].split(/[\s,]/);
-
-      return false;
     }
   }
 
@@ -851,7 +862,7 @@ export class beeMain extends EventTarget {
       this.twoLetterListContainer.replaceChildren( list );
   
       for (const firstLetter of this.state.lettersArray) {
-        this._showLetterCounts( firstLetter.toUpperCase() ); 
+        this._getLetterCounts( firstLetter.toUpperCase() ); 
       }
     }
   }
@@ -1134,7 +1145,7 @@ export class beeMain extends EventTarget {
     }
 
   
-    this._showLetterCounts( firstLetter );
+    this._getLetterCounts( firstLetter );
   }
 
   /**
@@ -1163,7 +1174,16 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
-  _showLetterCounts( firstLetter ) {
+  _getAllLetterCounts() {
+  }
+
+  /**
+   * Count letter counts.
+   * @param {string} firstLetter The first letter .
+   * @private
+   * @memberOf beeMain
+   */
+  _getLetterCounts( firstLetter ) {
     const letterCountsInputs = Array.from(this.gridTableContainer.querySelectorAll(`[id^=${firstLetter}-]`));
     const letterBinCounts = [];
     for (const el of letterCountsInputs) {
@@ -1182,6 +1202,33 @@ export class beeMain extends EventTarget {
       }
     }
 
+    let letterBinTotals = letterBinCounts.join(', ');
+    const twoLetterLists = Array.from(this.twoLetterListContainer.querySelectorAll(`.${firstLetter} span.length-counts`));
+    const activeTwoLetterLists = twoLetterLists.filter( (el) => {
+      // remove any previous displays
+      el.textContent = '';
+
+      // find only the elements greater than zero
+      const input = el.parentNode.querySelector('input');
+      return (input.value > 0);
+    });
+
+    for (const entry of activeTwoLetterLists) {
+      entry.textContent = letterBinTotals;
+    
+      if (activeTwoLetterLists.length > 1) {
+        entry.classList.add('uncertain');
+      }
+    }
+  }
+
+  /**
+   * Count letter counts.
+   * @param {string} firstLetter The first letter .
+   * @private
+   * @memberOf beeMain
+   */
+  _showLetterCounts( firstLetter ) {
     let letterBinTotals = letterBinCounts.join(', ');
     const twoLetterLists = Array.from(this.twoLetterListContainer.querySelectorAll(`.${firstLetter} span.length-counts`));
     const activeTwoLetterLists = twoLetterLists.filter( (el) => {
@@ -1602,7 +1649,7 @@ export class beeMain extends EventTarget {
     const target = event.target;
 
     let message = null;
-    if ( target === this.shareButton ) {
+    if ( target === this.shareButton || target === this.dialogShareButton ) {
       let rank = this.state.rank;
       this.state.times.current.timestamp =  Date.now(); 
       if (this.state.rank === 'Queen Bee') {
@@ -1717,6 +1764,7 @@ export class beeMain extends EventTarget {
       // has letters and stats, so default to the two-letter list tab
       // this.twoLetterListsTab.checked = true;
 
+      this._showLetterList();
       this._showStats();
   
       // find and display the grid and two-letter lists
@@ -1778,4 +1826,5 @@ export class beeMain extends EventTarget {
       }
     }
   }
+
 }

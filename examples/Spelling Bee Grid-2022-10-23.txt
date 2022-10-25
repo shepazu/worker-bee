@@ -1,0 +1,53 @@
+p a f i l n u
+
+WORDS: 30, POINTS: 111, PANGRAMS: 1 (1 Perfect)
+	4 	5 	6 	7 	Σ
+a: 	- 	1 	1 	- 	2
+f: 	2 	- 	1 	- 	3
+p: 	12 	6 	4 	2 	24
+u: 	- 	1 	- 	- 	1
+Σ: 	14 	8 	6 	2 	30
+
+Two letter list:
+
+ap-2
+fi-1 fl-2
+pa-10 pi-4 pl-2 pu-8
+un-1 
+
+-----
+Beginner (0)
+Good Start (2)
+Moving Up (6)
+Good (9)
+Solid (17)
+Nice (28)
+Great (44)
+Amazing (56)
+Genius (78)
+
+-----
+
+appall
+fillip
+flap
+flip
+pail
+pain
+painful
+pall
+panini
+papa
+papal
+pill
+pinup
+plain
+plan
+puff
+puffin
+pull
+pulp
+pupa
+pupal
+pupil
+unpin

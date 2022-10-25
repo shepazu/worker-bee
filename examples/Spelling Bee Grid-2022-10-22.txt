@@ -1,0 +1,84 @@
+c a i l m o y
+
+WORDS: 52, POINTS: 218, PANGRAMS: 1
+	4 	5 	6 	7 	8 	9 	10 	Σ
+a: 	1 	- 	1 	2 	- 	- 	- 	4
+c: 	14 	10 	6 	1 	2 	1 	1 	35
+i: 	- 	2 	- 	- 	- 	- 	- 	2
+l: 	4 	2 	1 	1 	- 	- 	- 	8
+m: 	1 	2 	- 	- 	- 	- 	- 	3
+Σ: 	20 	16 	8 	4 	2 	1 	1 	52
+
+Two letter list:
+
+ac-4
+ca-9 ci-2 cl-6 co-15 cy-3
+ic-1 il-1
+la-3 li-1 lo-4
+ma-1 mi-2 
+
+-----
+Beginner (0)
+Good Start (4)
+Moving Up (11)
+Good (17)
+Solid (33)
+Nice (55)
+Great (87)
+Amazing (109)
+Genius (153)
+
+-----
+
+acacia
+acai
+acclaim
+acyclic
+cacao
+calico
+call
+calla
+callaloo
+calm
+calmly
+cami
+camo
+ciao
+cilia
+claim
+clam
+clammy
+clay
+cloaca
+cloy
+coal
+coca
+cocci
+cocoa
+coil
+cola
+colic
+coma
+comic
+comical
+comically
+comma
+cool
+coolly
+coyly
+cyclic
+cyclical
+cyclically
+icily
+iliac
+lacy
+laic
+laical
+lilac
+local
+locally
+loci
+loco
+malic
+mica
+mimic
