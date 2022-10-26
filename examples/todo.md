@@ -7,6 +7,6 @@
 - [x] bug on remove word when no 2-letter list?
 - [x] card with point countdown to new rank
 - [x] congrats when reach bingo!, pangrams, etc.
+- [x] add find missing words: two-letters, and where known, letter count
 - [?] wipe previous UI when starting new session
-- [?] add find missing words: two-letters, and where known, letter count
 - [?] allow people to share / copy-paste status, wordlist, etc.
