@@ -54,6 +54,7 @@ export class beeMain extends EventTarget {
       twoLetterArray: null,
       letterCountArray: null,
       wordList: [],
+      bonusWordList: [],
       totalWords: 0,
       wordsFound: 0,
       totalPoints: null,
@@ -154,7 +155,7 @@ export class beeMain extends EventTarget {
 
     this.messageQueue = [];
 
-    this.debug = '-test'; // '';
+    this.debug = ''; // '-test';
 
 
     // DOM elements
@@ -167,6 +168,7 @@ export class beeMain extends EventTarget {
     this.beeWordInput = document.getElementById('bee-word');
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
+    this.bonusButton = document.getElementById('bonus-button');
     this.shareButton = document.getElementById('share_button');
     this.askButton = document.getElementById('ask_button');
     this.resetButton = document.getElementById('reset_button');
@@ -186,7 +188,9 @@ export class beeMain extends EventTarget {
     this.twoLetterListContainer = document.getElementById('two-letter-lists');
     this.discoveryOrderListTab = document.getElementById('discovery-order-list-tab');
     this.discoveryOrderListContainer = document.getElementById('discovery-order-list');
-    this.discoveryOrderList = null;
+    this.discoveryOrderListEl = null;
+    this.bonusWordListContainer = document.getElementById('bonus-word-list');
+    this.bonusWordListEl = null;
     
     this.wordCountStatEl = null;
     this.pointStatEl = null;
@@ -208,10 +212,11 @@ export class beeMain extends EventTarget {
   async _init() {
     this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
-    this.beeWordInput.addEventListener('change', this._addWord.bind(this));
+    this.beeWordInput.addEventListener('keyup', this._getKeyInput.bind(this));
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
+    this.enterButton.addEventListener('click', this._addWord.bind(this) );
+    this.bonusButton.addEventListener('click', this._addWord.bind(this) );
     this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
-    this.enterButton.addEventListener('click', () => this.beeWordInput.dispatchEvent(new Event('change')) );
 
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
     this.askButton.addEventListener('click', this._shareStatus.bind(this));
@@ -286,6 +291,7 @@ export class beeMain extends EventTarget {
 
         this.listTabsContainer.classList.remove('hidden');
         this._createDiscoveryOrderList();
+        this._createBonusList();
 
         const hasStats = this._findStats();
         if (!hasStats) {
@@ -331,6 +337,7 @@ export class beeMain extends EventTarget {
 
     this.listTabsContainer.classList.remove('hidden');
     this._createDiscoveryOrderList();
+    this._createBonusList();
 
     // has the same letter array, so this is the same session, 
     //  so add any existing discovered words in word list to two-letter lists
@@ -822,8 +829,18 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    */
   _createDiscoveryOrderList() {
-    this.discoveryOrderList = document.createElement('ol');
-    this.discoveryOrderListContainer.replaceChildren( this.discoveryOrderList ); 
+    this.discoveryOrderListEl = document.createElement('ol');
+    this.discoveryOrderListContainer.replaceChildren( this.discoveryOrderListEl ); 
+  }
+
+  /**
+   * Creates bonus word list output.
+   * @private
+   * @memberOf beeMain
+   */
+  _createBonusList() {
+    this.bonusWordListEl = document.createElement('ol');
+    this.bonusWordListContainer.replaceChildren( this.bonusWordListEl ); 
   }
 
   /**
@@ -879,14 +896,26 @@ export class beeMain extends EventTarget {
    * @private
    * @memberOf beeMain
    */
+  _getKeyInput( event ) {
+    if (event.key === 'Enter') {
+      this._addWord( event );
+    }
+  }
+
+  /**
+   * Adds a word to the list of found words.
+   * @param {Event} event The event on the triggering element.
+   * @private
+   * @memberOf beeMain
+   */
   async _addWord( event ) {
     const target = event.target;
-    const addWordList = target.value.trim();
+    const addWordList = this.beeWordInput.value.trim();
 
     // clear the input
-    target.value = '';
+    this.beeWordInput.value = '';
 
-    if (!this.state.letterCountArray) {
+    if (!this.state.lettersArray) {
       this.beeWordInput.classList.add('reject');
       this._queueMessage('No list of letters');
     } else if (addWordList) {
@@ -938,30 +967,37 @@ export class beeMain extends EventTarget {
               const isPangram = this._checkPangram( eachWord );
               this._checkBingo( firstLetter );
 
-              // add word to master word list
-              this.state.wordList.push({
+              const newWord = {
                 word: eachWord,
                 timestamp: Date.now(),
                 isPangram,
                 isPerfectPangram: null,
-              });
+              };
 
-              // this._showMessage('word added', '');
-
-              // update word count
-              // this.state.wordsFound = this.state.wordList.length;
-              this._updateWordCount();
-
-              // add word to discovery-order list
-              this._displayDiscoveryOrderListWord( eachWord, 'className', isPangram );
-
-              // add word to appropriate two-letter list
-              if (twoLetterTerm) {
-                this._displayTwoLetterListWord( eachWord, twoLetterCode, isPangram );
+              if (target !== this.bonusButton) {
+                // add word to master word list
+                this.state.wordList.push(newWord);
+                // this._showMessage('word added', '');
+  
+                // update word count
+                // this.state.wordsFound = this.state.wordList.length;
+                this._updateWordCount();
+  
+                // add word to discovery-order list
+                this._displayDiscoveryOrderListWord( eachWord, 'className', isPangram );
+  
+                // add word to appropriate two-letter list
+                if (twoLetterTerm) {
+                  this._displayTwoLetterListWord( eachWord, twoLetterCode, isPangram );
+                }
+  
+                // update score
+                this._updateScore(wordLength, isPangram);
+              } else {
+                this.state.bonusWordList.push(newWord);
+                this._displayBonusWordListWord( eachWord, 'bonus', isPangram );
+                this._queueMessage('Bonus word! No points, but smug satisfaction');
               }
-
-              // update score
-              this._updateScore(wordLength, isPangram);
             }
           }
         }
@@ -989,7 +1025,7 @@ export class beeMain extends EventTarget {
     timeEl.append( this._formatTime(millis) );
     wordDefEl.append( ' ', timeEl );
 
-    this.discoveryOrderList.append( wordDefEl );
+    this.discoveryOrderListEl.append( wordDefEl );
   }
 
   /**
@@ -1023,6 +1059,27 @@ export class beeMain extends EventTarget {
   }
 
   /**
+   * Adds a word to the bonus list.
+   * @param {string} word The word to be added.
+   * @private
+   * @memberOf beeMain
+   */
+   _displayBonusWordListWord( word, className, isPangram ) {
+    // add word to bonus word list
+    const wordDefEl = this._createWordListItem( word, false, className, isPangram, true );
+
+    // get timestamp of entry
+    const wordEntry = this.state.bonusWordList.find(( entry ) => entry.word === word);
+
+    const millis = wordEntry.timestamp - this.state.times.start.timestamp;
+    const timeEl = document.createElement('time');
+    timeEl.append( this._formatTime(millis) );
+    wordDefEl.append( ' ', timeEl );
+
+    this.bonusWordListEl.append( wordDefEl );
+  }
+
+  /**
    * Creates a list element for a word.
    * @param {string} word The word to be added.
    * @param {Boolean} isTwoLetterItem Whether this is for the two-letter lists or not.
@@ -1032,12 +1089,15 @@ export class beeMain extends EventTarget {
    * @memberOf beeMain
    * @return {Element} The resulting word list element.
    */
-  _createWordListItem( word, isTwoLetterItem, className, isPangram ) {
+  _createWordListItem( word, isTwoLetterItem, className, isPangram = false, isBonusWord = false ) {
     let itemTag = 'dd';
     let itemId = `${word}-two-letters-word`;
     if (!isTwoLetterItem) {
       itemTag = 'li';
       itemId = `${word}-discovery-word`;
+      if (isBonusWord) {
+        itemId = `${word}-bonus-word`;
+      } 
     }
     const defEl = document.createElement(itemTag);
     defEl.classList.add(className);
@@ -1430,10 +1490,10 @@ export class beeMain extends EventTarget {
 
     }
   
-    if (this.state.rank === 'Genius') {
-      this.state.times.genius.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+    if (this.state.rank === 'Genius' && !this.state.times.genius.timestamp) {
+      this.state.times.genius.timestamp =  Date.now();
       this._displayMilestone(); 
-    } else if (this.state.rank === 'Queen Bee') {
+    } else if (this.state.rank === 'Queen Bee' && !this.state.times.queen_bee.timestamp) {
       this.state.times.queen_bee.timestamp =  Date.now(); 
       this.nextRankPoints.replaceChildren('You win!');
       this.nextRankTitle.replaceChildren('');
@@ -1478,24 +1538,35 @@ export class beeMain extends EventTarget {
   _removeWord( event ) {
     const target = event.target;
     const targetWord = target.parentNode.id.split('-')[0];
-    // update two-letter term and grid numbers
-    this._updateGridCountsByWord( targetWord, false );
 
-    const twoLetterEntry = document.getElementById(`${targetWord}-two-letters-word`); 
-    if (twoLetterEntry) {
-      twoLetterEntry.remove();
+    if (target.parentNode.classList.contains('bonus')) {
+      const bonusEntry = document.getElementById(`${targetWord}-bonus-word`); 
+      if (bonusEntry) {
+        bonusEntry.remove();
+      }
+
+      const wordIndex = this.state.bonusWordList.findIndex(({ word }) => word === targetWord);
+      this.state.bonusWordList.splice( wordIndex, 1 );
+    } else {
+      // update two-letter term and grid numbers
+      this._updateGridCountsByWord( targetWord, false );
+  
+      const twoLetterEntry = document.getElementById(`${targetWord}-two-letters-word`); 
+      if (twoLetterEntry) {
+        twoLetterEntry.remove();
+      }
+      const discoveryEntry = document.getElementById(`${targetWord}-discovery-word`); 
+      if (discoveryEntry) {
+        discoveryEntry.remove();
+      }
+  
+      const wordIndex = this.state.wordList.findIndex(({ word }) => word === targetWord);
+      this.state.wordList.splice( wordIndex, 1 );
+      this._updateWordCount();
+  
+      const isPangram = this._checkPangram( targetWord, false );
+      this._updateScore( targetWord.length, isPangram, false );
     }
-    const discoveryEntry = document.getElementById(`${targetWord}-discovery-word`); 
-    if (discoveryEntry) {
-      discoveryEntry.remove();
-    }
-
-    const wordIndex = this.state.wordList.findIndex(({ word }) => word === targetWord);
-    this.state.wordList.splice( wordIndex, 1 );
-    this._updateWordCount();
-
-    const isPangram = this._checkPangram( targetWord, false );
-    this._updateScore( targetWord.length, isPangram, false );
   }
 
   /**

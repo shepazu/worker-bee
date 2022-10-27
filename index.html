@@ -30,7 +30,7 @@
       <label id="bee-word-label" for="bee-word">Enter found words:</label>
       <input id="bee-word" type="text">
       <button id="backspace-button" class="button" aria-label="backspace">↩</button>
-      <!-- <button id="bonus-button" class="button" aria-label="bonus word">🎁</button> -->
+      <button id="bonus-button" class="button" aria-label="bonus word">🎁</button>
       <button id="enter-button" class="button">enter</button>
     </section>
     <section id="grid-table"></section>
@@ -46,6 +46,15 @@
         <input type="radio" class="tab_selector" id="discovery-order-list-tab" name="word_list_tabs">
         <label for="discovery-order-list-tab">Discovery order</label>
         <div id="discovery-order-list" class="tab_content">
+        </div>
+      </div>
+      <div class="tab">
+        <input type="radio" class="tab_selector" id="bonus-word-list-tab" name="word_list_tabs">
+        <label for="bonus-word-list-tab">Bonus words</label>
+        <div class="tab_content">
+          <p>Additional valid words not accepted by Spelling Bee</p>
+          <div id="bonus-word-list">
+          </div>
         </div>
       </div>
     </section>
