@@ -1,0 +1,69 @@
+c d g i n o t
+
+WORDS: 38, POINTS: 263, PANGRAMS: 1
+	4 	5 	6 	7 	8 	9 	10 	12 	Σ
+c: 	2 	4 	5 	3 	- 	6 	3 	1 	24
+d: 	- 	- 	1 	1 	- 	- 	- 	- 	2
+i: 	1 	2 	2 	1 	1 	2 	- 	- 	9
+n: 	- 	- 	- 	- 	1 	- 	- 	- 	1
+t: 	- 	2 	- 	- 	- 	- 	- 	- 	2
+Σ: 	3 	8 	8 	5 	2 	8 	3 	1 	38
+
+Two letter list:
+
+ci-1 co-23
+di-2
+ic-3 id-1 in-4 io-1
+no-1
+ti-1 to-1 
+
+-----
+Beginner (0)
+Good Start (5)
+Moving Up (13)
+Good (21)
+Solid (39)
+Nice (66)
+Great (105)
+Amazing (132)
+Genius (184)
+
+-----
+citing
+cocci
+cocoon
+cocooning
+coding
+codon
+cognition
+coin
+coinciding
+coining
+concoct
+concocting
+concoction
+condition
+conditioning
+condo
+condoning
+conic
+conning
+connoting
+cooing
+coot
+cotton
+cottoning
+dicing
+diction
+icing
+icon
+iconic
+idiotic
+inciting
+incognito
+indict
+indicting
+ionic
+noticing
+tinct
+tonic
