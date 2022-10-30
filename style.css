@@ -51,8 +51,7 @@ h1 {
   padding: 0;
 }
 
-h2,
-.tab > label {
+h2 {
   font-size: 1.25rem;
   font-weight: normal;
   margin: 0 0 1rem 0;
@@ -118,6 +117,7 @@ textarea {
 
 #bee-word {
   font-size: 1.25rem;
+  max-width: 7rem;
 }
 
 textarea, 
@@ -354,7 +354,7 @@ button[type=remove]:hover {
 }
 
 /* support links */
-footer {
+#settings-tab .tab_content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -362,8 +362,8 @@ footer {
   margin-top: 3rem;
 }
 
-footer a.button,
-footer .button {
+#settings-tab .tab_content a.button,
+#settings-tab .tab_content .button {
   padding: 7px 12.5px;
 }
 
@@ -422,7 +422,7 @@ footer .button {
   min-height: 36rem;
   /* Fix to use flexbox? */
   clear: both;
-  margin: 1rem 0;
+  margin: 0.25rem 0;
 }
 
 .tab {
@@ -430,14 +430,16 @@ footer .button {
 }
 
 .tab label {
-  padding: 0.5remx;
-  margin-left: -1px;
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin-left: -1rem;
   position: relative;
   left: 1px;
 }
 
 .tab [type=radio].tab_selector {
   opacity: 0;
+  max-width: 1px;
 }
 
 .tab_content {
@@ -526,7 +528,7 @@ dialog section {
 /* Notification toast */
  /* The notification - position it at the top and in the middle of the screen */
 ul#notifications {
-  position: absolute;
+  position: fixed;
   top: 2rem;
   display: flex;
   flex-direction: column;
@@ -580,6 +582,14 @@ li.notification {
 	}
 }
 
+footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
 /* different devices and screen sizes */
 /* Extra small devices (phones, 600px and down) */
 /* @media only screen and (max-width: 600px) { } */
@@ -599,6 +609,14 @@ li.notification {
   #stats-block {
     justify-content: flex-start;
     gap: 2rem;
+  }
+
+  #bee-word {
+    max-width: 10rem;
+  }
+
+  .tab label {
+    font-size: 1.25rem;
   }
 
   table {
@@ -628,9 +646,17 @@ li.notification {
     font-size: 4rem; 
   }
 
+  #bee-word {
+    max-width: 10rem;
+  }
+
   .tabs {
     /* change to increase tab area height */
     min-height: 42rem;
+  }
+
+  .tab label {
+    font-size: 1.25rem;
   }
 
   #two-letter-lists dl,

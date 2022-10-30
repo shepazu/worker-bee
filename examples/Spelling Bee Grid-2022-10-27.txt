@@ -1,0 +1,53 @@
+f a b d l o r
+
+WORDS: 29, POINTS: 109, PANGRAMS: 1, BINGO
+	4 	5 	6 	7 	10 	Σ
+a: 	2 	1 	1 	1 	- 	5
+b: 	1 	1 	- 	- 	- 	2
+d: 	1 	- 	- 	- 	- 	1
+f: 	8 	5 	1 	1 	1 	16
+l: 	1 	1 	- 	- 	- 	2
+o: 	- 	1 	- 	1 	- 	2
+r: 	1 	- 	- 	- 	- 	1
+Σ: 	14 	9 	2 	3 	1 	29
+
+Two letter list:
+
+af-3 al-2
+ba-1 bo-1
+do-1
+fa-4 fl-6 fo-6
+lo-2
+of-2
+ro-1 
+
+-----
+floorboard
+afar
+afford
+afro
+alfalfa
+aloof
+barf
+boffo
+doff
+fall
+falloff
+farad
+farro
+flab
+flood
+floor
+flora
+floral
+foal
+fold
+food
+fool
+fora
+ford
+loaf
+loofa
+offal
+offload
+roof

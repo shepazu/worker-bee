@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>Worker Bee</title>
   
@@ -31,6 +31,7 @@
       <input id="bee-word" type="text">
       <button id="backspace-button" class="button" aria-label="backspace">↩</button>
       <button id="bonus-button" class="button" aria-label="bonus word">🎁</button>
+      <!-- <button id="definition-button" class="button" aria-label="used forum definitions to find word">🔏</button> -->
       <button id="enter-button" class="button">enter</button>
     </section>
     <section id="grid-table"></section>
@@ -57,6 +58,32 @@
           </div>
         </div>
       </div>
+<!-- 
+      <div class="tab">
+        <input type="radio" class="tab_selector" id="settings-tab" name="word_list_tabs">
+        <label for="settings-tab">Settings</label>
+        <div id="settings-container">
+          <div class="tab_content">
+            <section id="share_links">
+              <button id="share_button" class="button">share status</button>
+              <button id="ask_button" class="button">phone a friend</button>
+            </section>
+            <section id="support_links">
+              <a href="./instructions.html" class="button">instructions</a>
+              <a href="https://github.com/shepazu/worker-bee/issues" class="button">feedback</a>
+              <a href="https://www.wordnik.com/words/jackal" class="button">corrections</a>
+            </section>
+            <section id="settings">
+              <div>
+                <label for="history_selector">Load previous game</label>
+                <select id="history_selector"></select>
+              </div>
+              <button id="reset_button" class="button">reset</button>
+            </section>
+          </div>
+        </div>
+      </div>
+       -->
     </section>
 
   </main>
@@ -75,7 +102,7 @@
   </dialog>
 
   <ul id="notifications"></ul> 
-
+ 
   <footer>
     <section id="share_links">
       <button id="share_button" class="button">share status</button>
@@ -93,7 +120,8 @@
       </div>
       <button id="reset_button" class="button">reset</button>
     </section>
-  </footer>
+  </footer> 
+
   
 </body>
 </html>
