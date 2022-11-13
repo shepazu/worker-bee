@@ -64,6 +64,8 @@ export class beeMain extends EventTarget {
       perfectPangrams: 0,
       perfectPangramsFound: 0,
 
+      disallowedCharacters: null,
+
       rank: 'Beginner',
       rankings: [
         {
@@ -213,6 +215,7 @@ export class beeMain extends EventTarget {
     this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
     this.beeWordInput.addEventListener('keyup', this._getKeyInput.bind(this));
+    this.beeWordInput.addEventListener('keyup', this._filterKeyInput.bind(this));
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
     this.enterButton.addEventListener('click', this._addWord.bind(this) );
     this.bonusButton.addEventListener('click', this._addWord.bind(this) );
@@ -365,6 +368,10 @@ export class beeMain extends EventTarget {
     let letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
       this.state.lettersArray = letterList[0].split(/\s/);
+
+      // create regex pattern for limiting input
+      const lettersString = this.state.lettersArray.join('').toLowerCase();
+      this.state.disallowedCharacters = new RegExp(`[^${lettersString} ]`, 'ig');
 
       this._showLetterList();
 
@@ -900,6 +907,16 @@ export class beeMain extends EventTarget {
     if (event.key === 'Enter') {
       this._addWord( event );
     }
+  }
+
+  /**
+   * Limits text input to letters in letters array.
+   * @param {Event} event The event on the element.
+   * @private
+   * @memberOf beeMain
+   */
+  _filterKeyInput( event ) {
+    this.beeWordInput.value = this.beeWordInput.value.replace(this.state.disallowedCharacters, '');
   }
 
   /**

@@ -1,0 +1,78 @@
+h a c i l o t
+
+WORDS: 53, POINTS: 219, PANGRAMS: 1, BINGO
+	4 	5 	6 	7 	8 	9 	10 	Σ
+a: 	- 	2 	1 	1 	- 	1 	- 	5
+c: 	6 	6 	1 	2 	3 	- 	1 	19
+h: 	9 	5 	- 	- 	- 	- 	- 	14
+i: 	1 	- 	- 	- 	- 	- 	- 	1
+l: 	2 	4 	1 	- 	- 	- 	- 	7
+o: 	1 	- 	- 	- 	1 	- 	- 	2
+t: 	2 	2 	1 	- 	- 	- 	- 	5
+Σ: 	21 	19 	4 	3 	4 	1 	1 	53
+
+Two letter list:
+
+ac-1 al-3 at-1
+ca-3 ch-13 cl-1 co-2
+ha-8 hi-3 ho-3
+it-1
+la-2 li-2 lo-3
+oa-1 oi-1
+ta-1 th-2 ti-1 to-1 
+
+-----
+
+catholic
+achoo
+alcohol
+alcoholic
+aloha
+attach
+catch
+catchall
+chai
+challah
+chaotic
+chat
+chia
+chic
+chica
+chichi
+chili
+chill
+chit
+chitchat
+chocoholic
+cloth
+coach
+coho
+hail
+halal
+hall
+halo
+halt
+hatch
+hath
+hatha
+hill
+hilt
+hitch
+holt
+hooch
+hoot
+itch
+latch
+lath
+litchi
+litho
+loach
+loath
+loch
+oath
+oilcloth
+tach
+that
+thatch
+tilth
+tooth

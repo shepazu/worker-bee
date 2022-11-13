@@ -1,0 +1,81 @@
+m b d e l n o
+
+WORDS: 56, POINTS: 258, PANGRAMS: 2, BINGO
+	4 	5 	6 	7 	8 	10 	Σ
+b: 	2 	2 	2 	2 	- 	- 	8
+d: 	4 	2 	3 	- 	- 	- 	9
+e: 	- 	2 	1 	1 	2 	1 	7
+l: 	1 	1 	1 	- 	- 	- 	3
+m: 	11 	7 	6 	2 	1 	- 	27
+n: 	- 	- 	- 	- 	1 	- 	1
+o: 	1 	- 	- 	- 	- 	- 	1
+Σ: 	19 	14 	13 	5 	4 	1 	56
+
+Two letter list:
+
+be-1 bl-2 bo-5
+de-5 do-4
+em-7
+le-1 lo-2
+me-12 mo-15
+no-1
+om-1 
+
+-----
+
+embolden
+emboldened
+bellmen
+bloom
+bloomed
+bomb
+bombe
+bombed
+boom
+boomed
+deem
+deemed
+demo
+demoed
+demon
+dome
+domed
+doom
+doomed
+embed
+embedded
+emblem
+emend
+emended
+lemon
+loom
+loomed
+meddle
+meddled
+meld
+melded
+melee
+melodeon
+melon
+meme
+memed
+memo
+mend
+mended
+mobbed
+mode
+model
+modeled
+modem
+mold
+molded
+mole
+moll
+mondo
+mono
+mood
+mooed
+moon
+mooned
+noblemen
+omen

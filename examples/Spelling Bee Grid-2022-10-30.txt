@@ -1,0 +1,58 @@
+t b e h i l y
+
+WORDS: 34, POINTS: 135, PANGRAMS: 1, BINGO
+	4 	5 	6 	7 	8 	Σ
+b: 	4 	1 	3 	- 	2 	10
+e: 	- 	2 	1 	- 	1 	4
+h: 	1 	- 	- 	- 	- 	1
+i: 	1 	- 	- 	- 	- 	1
+l: 	2 	1 	1 	1 	- 	5
+t: 	6 	4 	2 	- 	- 	12
+y: 	1 	- 	- 	- 	- 	1
+Σ: 	15 	8 	7 	1 	3 	34
+
+Two letter list:
+
+be-5 bi-2 bl-2 by-1
+el-1 et-1 ey-2
+hi-1
+it-1
+li-5
+te-3 th-2 ti-7
+ye-1 
+
+-----
+blithely
+beet
+beetle
+belittle
+belt
+betel
+billet
+bite
+blithe
+byte
+elite
+ethyl
+eyelet
+eyeteeth
+hilt
+itty
+lilt
+lite
+lithe
+lithely
+little
+teeth
+teethe
+tell
+thee
+they
+tile
+till
+tilt
+tilth
+tithe
+title
+tittle
+yeti

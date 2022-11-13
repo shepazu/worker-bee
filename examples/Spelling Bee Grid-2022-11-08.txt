@@ -1,0 +1,42 @@
+g h l n o r u
+
+WORDS: 20, POINTS: 75, PANGRAMS: 1
+	4 	5 	6 	7 	8 	Σ
+g: 	6 	1 	2 	- 	- 	9
+h: 	1 	- 	- 	- 	1 	2
+l: 	3 	- 	- 	1 	1 	5
+o: 	- 	- 	1 	- 	- 	1
+r: 	1 	1 	- 	- 	- 	2
+u: 	- 	- 	1 	- 	- 	1
+Σ: 	11 	2 	4 	1 	2 	20
+
+Two letter list:
+
+gh-1 gl-1 go-4 gr-1 gu-2
+ho-1 hu-1
+lo-4 lu-1
+oo-1
+ro-1 ru-1
+un-1 
+
+-----
+
+ghoul
+glug
+gong
+googol
+goon
+gorgon
+grog
+gull
+guru
+hourlong
+hung
+logo
+long
+longhorn
+lung
+oolong
+rough
+rung
+unhung
