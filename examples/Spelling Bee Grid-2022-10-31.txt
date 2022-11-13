@@ -1,0 +1,58 @@
+t a h m n o p
+
+WORDS: 39, POINTS: 150, PANGRAMS: 1 (1 Perfect), BINGO
+	4 	5 	6 	7 	8 	9 	Σ
+a: 	2 	- 	- 	- 	- 	- 	2
+h: 	2 	1 	1 	- 	- 	- 	4
+m: 	4 	3 	- 	2 	- 	1 	10
+n: 	- 	- 	1 	- 	- 	- 	1
+o: 	2 	- 	- 	1 	- 	- 	3
+p: 	3 	1 	2 	2 	1 	- 	9
+t: 	6 	1 	3 	- 	- 	- 	10
+Σ: 	19 	6 	7 	5 	1 	1 	39
+
+Two letter list:
+
+at-2
+ha-2 ho-2
+ma-5 mo-5
+na-1
+oa-1 on-1 ot-1
+pa-2 ph-5 po-2
+ta-4 th-2 to-4 
+
+-----
+blithely
+beet
+beetle
+belittle
+belt
+betel
+billet
+bite
+blithe
+byte
+elite
+ethyl
+eyelet
+eyeteeth
+hilt
+itty
+lilt
+lite
+lithe
+lithely
+little
+teeth
+teethe
+tell
+thee
+they
+tile
+till
+tilt
+tilth
+tithe
+title
+tittle
+yeti

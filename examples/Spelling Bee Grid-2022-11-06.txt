@@ -1,0 +1,72 @@
+m a i l p r t
+
+WORDS: 47, POINTS: 185, PANGRAMS: 1, BINGO
+	4 	5 	6 	7 	8 	9 	Σ
+a: 	- 	1 	1 	1 	- 	- 	3
+i: 	1 	- 	3 	- 	- 	1 	5
+l: 	4 	2 	- 	- 	- 	- 	6
+m: 	9 	1 	2 	4 	1 	- 	17
+p: 	4 	2 	1 	- 	- 	- 	7
+r: 	1 	- 	- 	1 	- 	- 	2
+t: 	3 	1 	2 	- 	1 	- 	7
+Σ: 	22 	7 	9 	6 	2 	1 	47
+
+Two letter list:
+
+ai-1 al-1 ar-1
+im-5
+la-2 li-3 ll-1
+ma-13 mi-4
+pa-2 pi-1 pr-4
+ra-2
+ta-4 tr-3 
+
+-----
+
+Militia 
+Tramp 
+Lamp 
+Ramp 
+Impart 
+Pram 
+Armpit 
+Limp 
+Mart 
+Rampart 
+Mail 
+Trim 
+Malt 
+Mamma 
+Mama 
+Mill 
+Prim 
+Primp 
+Mammal 
+Martial 
+Marital 
+Llama 
+Lama 
+Lima 
+Tram 
+Palm 
+Tamp 
+Limit 
+Alarm 
+Impala 
+Imam 
+Maim 
+Pimp 
+Airmail 
+Impair 
+Mitt 
+Impartial 
+Marm 
+Primal 
+Pampa 
+Tatami 
+Mall 
+Taillamp 
+Tamari 
+Malaria 
+Malarial 
+Mitral

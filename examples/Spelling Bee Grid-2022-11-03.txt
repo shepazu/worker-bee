@@ -1,0 +1,56 @@
+u a l n o p r
+
+WORDS: 33, POINTS: 131, PANGRAMS: 1
+	4 	5 	6 	7 	9 	Σ
+a: 	1 	2 	2 	2 	- 	7
+l: 	4 	1 	2 	- 	- 	7
+n: 	2 	- 	- 	- 	- 	2
+p: 	6 	1 	1 	2 	- 	10
+r: 	- 	1 	- 	- 	- 	1
+u: 	2 	1 	2 	- 	1 	6
+Σ: 	15 	6 	7 	4 	1 	33
+
+Two letter list:
+
+an-3 au-4
+la-1 lu-6
+no-1 nu-1
+pl-1 po-2 pr-1 pu-6
+ru-1
+ul-2 un-2 up-2 
+
+-----
+
+annual
+annul
+annular
+aura
+aural
+aurora
+auroral
+larrup
+luau
+lull
+lulu
+luna
+lunar
+lunula
+noun
+null
+plural
+popular
+pour
+pronoun
+pull
+pulp
+pupa
+pupal
+purl
+purr
+rural
+ulna
+ulnar
+unpopular
+unroll
+upon
+uproar
