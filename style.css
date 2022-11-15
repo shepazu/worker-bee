@@ -525,6 +525,13 @@ dialog section {
   font-weight: bold;
 }
 
+#hinted-words, 
+#tipped-words {
+  margin: 0 0 1rem 0;
+  padding: 0;
+  max-width: 15rem;
+}
+
 /* Notification toast */
  /* The notification - position it at the top and in the middle of the screen */
 ul#notifications {

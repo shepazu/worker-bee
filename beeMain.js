@@ -28,7 +28,7 @@ export class beeMain extends EventTarget {
     //       timestamp: null,
     //       elapsed: null,
     //     },
-    //     definitions: {
+    //     tips: {
     //       timestamp: null,
     //       elapsed: null,
     //     },
@@ -63,8 +63,6 @@ export class beeMain extends EventTarget {
       pangramsFound: 0,
       perfectPangrams: 0,
       perfectPangramsFound: 0,
-
-      disallowedCharacters: null,
 
       rank: 'Beginner',
       rankings: [
@@ -134,7 +132,7 @@ export class beeMain extends EventTarget {
           timestamp: null,
           elapsed: null,
         },
-        definitions: {
+        tips: {
           timestamp: null,
           elapsed: null,
         },
@@ -171,6 +169,7 @@ export class beeMain extends EventTarget {
     this.backspaceButton = document.getElementById('backspace-button');
     this.enterButton = document.getElementById('enter-button');
     this.bonusButton = document.getElementById('bonus-button');
+    this.tipButton = document.getElementById('tip-button');
     this.shareButton = document.getElementById('share_button');
     this.askButton = document.getElementById('ask_button');
     this.resetButton = document.getElementById('reset_button');
@@ -183,6 +182,8 @@ export class beeMain extends EventTarget {
     this.dialogStatus = document.getElementById('dialog-status');
     this.dialogMesssage = document.getElementById('dialog-message');
     this.dialogTime = document.getElementById('dialog-time');
+    this.dialoghintedWords = document.getElementById('hinted-words');
+    this.dialogTippedWords = document.getElementById('tipped-words');
     this.dialogShareButton = document.getElementById('dialog-share_button');
     
     this.listTabsContainer = document.getElementById('list-tabs');
@@ -215,10 +216,10 @@ export class beeMain extends EventTarget {
     this.beeGridInput.addEventListener('input', this._parseHints.bind(this));
 
     this.beeWordInput.addEventListener('keyup', this._getKeyInput.bind(this));
-    this.beeWordInput.addEventListener('keyup', this._filterKeyInput.bind(this));
     this.beeWordInput.addEventListener('animationend', () => this.beeWordInput.classList.remove('accept', 'reject') );
     this.enterButton.addEventListener('click', this._addWord.bind(this) );
     this.bonusButton.addEventListener('click', this._addWord.bind(this) );
+    this.tipButton.addEventListener('click', this._addWord.bind(this) );
     this.backspaceButton.addEventListener('click', this._backspace.bind(this) );
 
     this.shareButton.addEventListener('click', this._shareStatus.bind(this));
@@ -303,7 +304,7 @@ export class beeMain extends EventTarget {
           this.discoveryOrderListTab.checked = true;
         } else {      
           // note time hints are posted
-          this.state.times.hints.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+          this.state.times.hints.timestamp =  Date.now(); // start, genius, hints, tips, queen_bee
 
           // set mode to having hints
           this.state.mode = 'hints';
@@ -368,10 +369,6 @@ export class beeMain extends EventTarget {
     let letterList = this.hintText.match(/(\w\s){6}\w/);
     if (letterList) {
       this.state.lettersArray = letterList[0].split(/\s/);
-
-      // create regex pattern for limiting input
-      const lettersString = this.state.lettersArray.join('').toLowerCase();
-      this.state.disallowedCharacters = new RegExp(`[^${lettersString} ]`, 'ig');
 
       this._showLetterList();
 
@@ -910,13 +907,13 @@ export class beeMain extends EventTarget {
   }
 
   /**
-   * Limits text input to letters in letters array.
+   * Removes the last letter from the found word input.
    * @param {Event} event The event on the element.
    * @private
    * @memberOf beeMain
    */
-  _filterKeyInput( event ) {
-    this.beeWordInput.value = this.beeWordInput.value.replace(this.state.disallowedCharacters, '');
+   _backspace() {
+    this.beeWordInput.value = this.beeWordInput.value.slice(0, -1);
   }
 
   /**
@@ -984,11 +981,18 @@ export class beeMain extends EventTarget {
               const isPangram = this._checkPangram( eachWord );
               this._checkBingo( firstLetter );
 
+              console.log('mode', this.state.mode);
+
+              const isHinted = (this.state.mode === 'hints') ? true : false;
+              const isForumTip = (target === this.tipButton) ? true : false;
+
               const newWord = {
                 word: eachWord,
                 timestamp: Date.now(),
                 isPangram,
                 isPerfectPangram: null,
+                isHinted,
+                isForumTip,
               };
 
               if (target !== this.bonusButton) {
@@ -1226,7 +1230,7 @@ export class beeMain extends EventTarget {
   
       // if (totalWordsLeft === 0) {
       //   // note time queen bee is reached
-      //   // this.state.times.queen_bee.timestamp =  Date.now(); // start, genius, hints, definitions, queen_bee
+      //   // this.state.times.queen_bee.timestamp =  Date.now(); // start, genius, hints, tips, queen_bee
       // }
     }
 
@@ -1599,13 +1603,37 @@ export class beeMain extends EventTarget {
   }
 
   /**
-   * Removes a letter to the found word input.
-   * @param {Event} event The event on the element.
+   * Creates a list of words found with forum tips.
    * @private
    * @memberOf beeMain
    */
-  _backspace() {
-    this.beeWordInput.value = this.beeWordInput.value.slice(0, -1);
+  _getHintedWords() {
+    const hintedWords = this.state.wordList.reduce( (accumulator, currentValue) => {
+      if (currentValue.isHinted) {
+        return accumulator.concat(currentValue.word);
+      } else {
+        return accumulator;
+      }
+    }, []);
+
+    return hintedWords;
+  }
+
+  /**
+   * Creates a list of words found with forum tips.
+   * @private
+   * @memberOf beeMain
+   */
+  _getForumTipWords() {
+    const forumTipWords = this.state.wordList.reduce( (accumulator, currentValue) => {
+      if (currentValue.isForumTip) {
+        return accumulator.concat(currentValue.word);
+      } else {
+        return accumulator;
+      }
+    }, []);
+
+    return forumTipWords;
   }
 
   /**
@@ -1720,11 +1748,25 @@ export class beeMain extends EventTarget {
       }
     }
 
+    const hintedWords = this._getHintedWords();
+    let hintedWordsMessage = 'No hints!';
+    if (hintedWords.length) {
+      hintedWordsMessage = `${hintedWords.length} hints: ${hintedWords.join(', ')}.`;
+    }
+
+    const forumTipWords = this._getForumTipWords();
+    let forumTipWordsMessage = 'No forum tips!';
+    if (forumTipWords.length) {
+      forumTipWordsMessage = `${forumTipWords.length} forum tips: ${forumTipWords.join(', ')}.`;
+    }
+
     // display status dialog with score, time, and share options
     this.milestoneDialog = document.getElementById('milestone-dialog');
     this.dialogStatus.textContent = status;
     this.dialogMesssage.textContent = message;
     this.dialogTime.textContent = this._formatTime(this.state.times.current.elapsed);
+    this.dialoghintedWords.replaceChildren(hintedWordsMessage);
+    this.dialogTippedWords.replaceChildren(forumTipWordsMessage);
     // this.dialogShareButton
 
     if (typeof this.milestoneDialog.showModal === 'function') {
